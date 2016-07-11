@@ -1,0 +1,23 @@
+
+.navbar-brand {
+    transform: translateX(-50%);
+    left: 50%;
+    position: absolute;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    font-size: 29px;
+    line-height: 25px;
+    padding: 10px;
+}
+
+.btn-dark{
+    border: 1px solid #444;
+    color: #999;
+    background-color: inherit;
+}
+
+.btn-dark:hover{
+    color: #FFF;
+    background-color: rgba(255,255,255,0.1);
+}
+
