@@ -6,4 +6,5 @@ require 'Components.php';
 <?=web::head("Test")?>
 <body>
     <?=web::nav()?>
+    <?=strlen(com_create_guid())?>
 </body>
