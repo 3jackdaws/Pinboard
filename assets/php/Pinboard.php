@@ -18,7 +18,7 @@ class Pinboard
 
     public function __construct(){
         $this->_connection = Database::connect();
-        $this->_board_data['guid'] = com_create_guid();
+        $this->_board_data['guid'] = Database::getGUID();
     }
 
     public static function getBoardByGUID($guid){

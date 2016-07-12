@@ -11,6 +11,10 @@
     padding: 10px;
 }
 
+body{
+    margin-top: 50px;
+}
+
 .btn-dark{
     border: 1px solid #444;
     color: #999;
@@ -21,4 +25,40 @@
     color: #FFF;
     background-color: rgba(255,255,255,0.1);
 }
+
+.module{
+    width: 100%;
+    height: 100%;
+    border: 6px solid white;
+}
+
+.sticky-note-container{
+    box-shadow: inset 5px 5px 20px rgba(0,0,0,.5);
+    background: #BBB;
+    height: 100%;
+    overflow: hidden;
+    overflow-y: scroll;
+    position: relative;
+}
+
+.sticky-note{
+    width: 200px;
+    height: 200px;
+    box-shadow: 1px 1px 5px rgba(0,0,0,.5);
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAAC1JREFUCB1juHosbSYDFIDYYD5MEEaD5BlBBLKAttWsdJAYGMAkQDQLjIOsAgAOmxo82c2L4AAAAABJRU5ErkJggg==);
+    background-color: #eedd99;
+    resize: none;
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid #666;
+    -webkit-appearance: none;
+}
+
+.sticky-note id{
+    visibility: hidden;
+}
+
+
+
+
 

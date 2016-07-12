@@ -20,6 +20,7 @@ class Web{
             <link href="/assets/css/pinboard.css" rel="stylesheet">
             <script src="/assets/js/jquery.min.js"></script>
             <script src="/assets/js/bootstrap.min.js"></script>
+            <script src="/assets/js/pinboard.js"></script>
 
         </head>
 
