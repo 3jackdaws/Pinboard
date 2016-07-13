@@ -13,6 +13,10 @@ class Database
         self::$_connection = new PDO('mysql:host=localhost;dbname=pinboard', "pinboard", '');
         date_default_timezone_set('America/Los_Angeles');
     }
+
+    /**
+     * @return PDO
+     */
     public static function connect(){
         if(self::$_connection instanceof PDO){
             
@@ -20,6 +24,7 @@ class Database
             self::_instantiate();
         }
         return self::$_connection;
+
     }
 
     public static function getGUID(){

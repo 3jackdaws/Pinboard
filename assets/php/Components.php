@@ -47,7 +47,7 @@ class Web{
                         <div class="btn-group navbar-btn">
                             <button data-toggle="dropdown" class="btn btn-dark dropdown-toggle">Boards</button>
                             <ul class="dropdown-menu" style="margin-top: 13px;">
-                                <li><a clahref="#">Action</a></li>
+                                <li><a href="#">Action</a></li>
                                 <li><a href="#">Another action</a></li>
                                 <li><a href="#">Something else here</a></li>
                                 <li class="divider"></li>

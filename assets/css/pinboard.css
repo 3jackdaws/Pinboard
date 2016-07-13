@@ -34,23 +34,24 @@ body{
 
 .sticky-note-container{
     box-shadow: inset 5px 5px 20px rgba(0,0,0,.5);
-    background: #BBB;
+    background: transparent;
     height: 100%;
     overflow: hidden;
     overflow-y: scroll;
     position: relative;
+
 }
 
 .sticky-note{
     width: 200px;
     height: 200px;
     box-shadow: 1px 1px 5px rgba(0,0,0,.5);
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAAC1JREFUCB1juHosbSYDFIDYYD5MEEaD5BlBBLKAttWsdJAYGMAkQDQLjIOsAgAOmxo82c2L4AAAAABJRU5ErkJggg==);
-    background-color: #eedd99;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAADhJREFUCB1j/P9u5hkGBsYGBjD4D6ZZIBwQCRKASDJBGBAVEAkGBqAgCMC0g+j/DUDtMFUwCQYGALW4D2DIX5GaAAAAAElFTkSuQmCC);
+    /*background-color: #ffee99;*/
     resize: none;
     padding: 10px;
     cursor: pointer;
-    border: 1px solid #666;
+    border: 1px solid #ddcc66;
     -webkit-appearance: none;
 }
 
