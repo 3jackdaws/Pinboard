@@ -77,7 +77,7 @@ function putdownNote(event){
 
 function foreach(list, mapfunc){
     var len = list.length;
-    for(var i = 0; i<len; i++){
+    for(var i = len-1; i>=0; i--){
         mapfunc(list[i]);
     }
 }
@@ -160,8 +160,7 @@ function loadModule(){
         var data = JSON.parse(module.data);
         // console.log(data);
         var notes = JSON.parse(data);
-        // console.log(notes);
-        noteModule.innerHTML = "";
+        foreach(noteModule.getElementsByClassName('sticky-note'), function(e){e.parentNode.removeChild(e)});
         foreach(notes, function(note){
             var newNote = createStickyNote(note.text, note.guid);
             noteModule.appendChild(newNote);
@@ -170,6 +169,7 @@ function loadModule(){
             newNote.style.top = note.top - 56;
             newNote.style.zIndex = note.z;
         });
+
 
     });
 }
