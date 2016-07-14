@@ -12,7 +12,7 @@ require 'Database.php';
 /**
  * modules.php
  * Use this to fetch, and update modules
- * required parameters are 
+ * required parameters are
  */
 
 $action = $_POST['action'];
@@ -55,7 +55,7 @@ switch ($action){
 echo json_encode($response);
 
 function getModule($guid){
-    $sql = "SELECT * FROM modules WHERE guid=:guid LIMIT 1;";
+    $sql = "SELECT * FROM modules WHERE guid=:guid;";
     $statement = Database::connect()->prepare($sql);
     $statement->bindParam(':guid', $guid);
     $statement->execute();
