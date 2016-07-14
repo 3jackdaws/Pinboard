@@ -192,8 +192,8 @@ StickyNoteModule.prototype.loadModule = function(){
         var notes = JSON.parse(data);
         boundFE(function(e){e.parentNode.removeChild(e)});
         foreach(notes, function(note){
-
             me.createNewStickyNote(note.text, note.left, note.top, note.z);
+            console.log(note.guid);
         });
     });
 };
