@@ -23,6 +23,7 @@ function putDownAll(event){
 
 
 var StickyNoteModule = function(mid, classname){
+    var me = this;
     this.mid = mid;
     this.createBaseModuleNode(classname);
     this.currentZIndex = null;
@@ -35,6 +36,8 @@ var StickyNoteModule = function(mid, classname){
     this.mti = null;
     this.numNotes = 0;
     this.maxNotes = 32;
+    this.refreshTimer = window.setInterval(function(){me.loadModule()}, 5000);
+
 };
 
 StickyNoteModule.prototype.createBaseModuleNode = function(classname){
