@@ -36,7 +36,7 @@ var StickyNoteModule = function(mid, classname){
     this.mti = null;
     this.numNotes = 0;
     this.maxNotes = 32;
-    this.refreshTimer = window.setInterval(function(){me.loadModule()}, 5000);
+    this.refreshTimer = window.setInterval(function(){me.refresh()}, 2000);
 
 };
 
@@ -52,6 +52,11 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
     addNoteButton.style.right = 15;
     addNoteButton.style.bottom = 10;
     this.baseModuleNode.appendChild(addNoteButton);
+};
+
+StickyNoteModule.prototype.refresh = function () {
+    if(this.heldNote || this.editedNote) return;
+    this.loadModule();
 };
 
 StickyNoteModule.prototype.createNewStickyNote = function (text, x, y, z) {
