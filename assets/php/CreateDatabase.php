@@ -30,5 +30,5 @@ $db->query("CREATE TABLE modules
 guid VARCHAR (38),
 type VARCHAR (64),
 belongs_to VARCHAR (38),
-data VARCHAR (65400)
+data TEXT (65400)
 );");

@@ -13,6 +13,7 @@
 
 body{
     margin-top: 50px;
+    padding: 3px;
 }
 
 .btn-dark{
@@ -29,17 +30,19 @@ body{
 .module{
     width: 100%;
     height: 100%;
-    border: 6px solid white;
+    border: 2px solid white;
 }
 
-.sticky-note-container{
+.sticky-note-module{
     box-shadow: inset 5px 5px 20px rgba(0,0,0,.5);
     background: transparent;
     height: 100%;
     overflow: hidden;
-    overflow-y: scroll;
     position: relative;
-
+    float: left;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .sticky-note{
@@ -50,13 +53,34 @@ body{
     /*background-color: #ffee99;*/
     resize: none;
     padding: 10px;
-    cursor: pointer;
+    cursor: text;
     border: 1px solid #ddcc66;
     -webkit-appearance: none;
 }
 
 .sticky-note id{
     visibility: hidden;
+}
+
+.noselect{
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: pointer;
+}
+
+.del-note{
+    text-decoration: none;
+    color: #111;
+    position: absolute;
+}
+
+.half-width{
+    width: 50%;
+    float: left;
+}
+.half-height{
+    height: 50%;
 }
 
 

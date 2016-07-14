@@ -1,7 +1,7 @@
 <?php
 
 class Web{
-    public function head($title){
+    public static function head($title){
         ob_start();
         ?>
 
@@ -20,7 +20,7 @@ class Web{
             <link href="/assets/css/pinboard.css" rel="stylesheet">
             <script src="/assets/js/jquery.min.js"></script>
             <script src="/assets/js/bootstrap.min.js"></script>
-            <script src="/assets/js/pinboard.js"></script>
+            <script src="/assets/js/sticky-note.js"></script>
 
         </head>
 
@@ -28,7 +28,7 @@ class Web{
         return ob_get_clean();
     }
 
-    public function nav(){
+    public static function nav(){
         ob_start();
         ?>
         <nav class="navbar navbar-inverse navbar-fixed-top" >

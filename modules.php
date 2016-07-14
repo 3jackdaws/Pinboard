@@ -14,7 +14,14 @@ $response = [];
 switch ($action){
     case "get":
     {
+        $hash = $_POST['hash'];
         $response['payload'] = getModule($module_guid);
+        if($response['payload'] == null){
+            $response['error'] = true;
+            $response['message'][] = "No module with that MID was found";
+        }else if($response['payload']['hash'] == $hash){
+            $response['payload'] = null;
+        }
         break;
     }
     case "update":
@@ -51,10 +58,11 @@ function getModule($guid){
 function updateModule($guid, $data){
     $sql = "INSERT INTO modules (guid, type, belongs_to, data) VALUES(:guid, :type, :belongs_to, :data) ON DUPLICATE KEY UPDATE    
                 type=:type, belongs_to=:belongs_to, data=:data;";
+    $data_json = json_encode($data);
     $statement = Database::connect()->prepare($sql);
     $statement->bindParam(':guid', $guid);
     $statement->bindParam(':type', $type);
     $statement->bindParam(':belongs_to', $belongs_to);
-    $statement->bindParam(':data', json_encode($data));
+    $statement->bindParam(':data', $data_json);
     $statement->execute();
 }

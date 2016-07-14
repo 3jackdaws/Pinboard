@@ -8,7 +8,6 @@ $pb = new Pinboard();
 <?=web::head("Test")?>
 <body>
     <?=web::nav()?>
-    <div class="sticky-note-container module" guid="1234">
-        <a onclick="spawnCard(this)" href="javascript:;" style="color: white;position: absolute; bottom: 10px; right: 15px; text-shadow: 0 0 5px black"><span class="glyphicon glyphicon-plus-sign"></span></a>
-    </div>
+
+
 </body>
