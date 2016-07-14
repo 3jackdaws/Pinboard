@@ -8,6 +8,13 @@
 set_include_path(realpath($_SERVER['DOCUMENT_ROOT']) . '/assets/php');
 require 'Database.php';
 
+
+/**
+ * modules.php
+ * Use this to fetch, and update modules
+ * required parameters are 
+ */
+
 $action = $_POST['action'];
 $module_guid = $_POST['module'];
 $response = [];
@@ -48,7 +55,7 @@ switch ($action){
 echo json_encode($response);
 
 function getModule($guid){
-    $sql = "SELECT * FROM modules WHERE guid=:guid;";
+    $sql = "SELECT * FROM modules WHERE guid=:guid LIMIT 1;";
     $statement = Database::connect()->prepare($sql);
     $statement->bindParam(':guid', $guid);
     $statement->execute();

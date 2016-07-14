@@ -4,7 +4,7 @@
 
 var stickymodules = [];
 var mbw = 2;
-document.addEventListener("mouseup", cancelAll);
+document.addEventListener("mouseup", putDownAll);
 window.addEventListener("load", function(){
     stickymodules[0] = new StickyNoteModule('left', "half-width");
     stickymodules[1] = new StickyNoteModule('right', "half-width");
@@ -14,12 +14,12 @@ window.addEventListener("load", function(){
     })
 });
 
-function cancelAll(event){
+function putDownAll(event){
     foreach(stickymodules, function (e) {
         e.putDownNote();
-        e.cancelEdit(event);
     });
 }
+
 
 
 var StickyNoteModule = function(mid, classname){
@@ -29,15 +29,17 @@ var StickyNoteModule = function(mid, classname){
     this.editedNote = null;
     this.heldNote = null;
     this.delNoteClickable = document.createElement('a');
-    this.delNoteClickable.cl
+    this.delNoteClickable.innerHTML = "<span class='glyphicon glyphicon-remove'></span>";
+    this.delNoteClickable.style.position = 'absolute';
     this.mouseTracker = {};
     this.mti = null;
     this.numNotes = 0;
-    this.maxNotes = 128;
+    this.maxNotes = 32;
 };
 
 StickyNoteModule.prototype.createBaseModuleNode = function(classname){
     this.baseModuleNode = document.createElement('div');
+    this.baseModuleNode.onclick = this.cancelEdit.bind(this);
     this.baseModuleNode.className = "module sticky-note-module " + classname;
     this.baseModuleNode.setAttribute('guid', this.mid);
     var addNoteButton = document.createElement('a');
@@ -50,12 +52,14 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
 };
 
 StickyNoteModule.prototype.createNewStickyNote = function (text, x, y, z) {
+    if(this.numNotes > this.maxNotes) return;
+    this.numNotes++;
     var note = document.createElement("textarea");
     note.className = "sticky-note noselect";
-    note.setAttribute("guid", guid());
+    note.setAttribute("guid", this.numNotes);
     note.readOnly = true;
     note.onmousedown = this.pickupNote.bind(this);
-    note.addEventListener("dblclick", this.editNote);
+    note.addEventListener("dblclick", this.editNote.bind(this));
     note.innerHTML = text;
     this.currentZIndex++;
     note.style.zIndex = this.currentZIndex;
@@ -70,22 +74,27 @@ StickyNoteModule.prototype.createNewStickyNote = function (text, x, y, z) {
 StickyNoteModule.prototype.editNote = function (event) {
     var me = this;
     this.editedNote = event.currentTarget;
+
     this.editedNote.readOnly = false;
     this.editedNote.style.boxShadow = "5px 10px 20px rgba(0,0,0,.5)";
     this.editedNote.className = this.editedNote.className.replace(/ noselect/, "");
     this.editedNote.onmousedown = null;
 
+    // console.log(this.editedNote);
     var noteDim = this.editedNote.getBoundingClientRect();
-    this.delNoteClickable.style.left = noteDim.left;
-    this.delNoteClickable.style.top = noteDim.top;
+    var parentRect = this.baseModuleNode.getBoundingClientRect();
+    console.log(noteDim);
+    this.delNoteClickable.style.left = noteDim.left - parentRect.left;
+    this.delNoteClickable.style.top = noteDim.top - parentRect.top;
     this.delNoteClickable.style.zIndex = this.currentZIndex + 10;
 
     this.delNoteClickable.onclick = function(){
-        me.editedNote.parentNode.removeChild(this.editedNote);
+        me.editedNote.parentNode.removeChild(me.delNoteClickable);
+        me.editedNote.parentNode.removeChild(me.editedNote);
         me.editedNote = null;
-        this.editedNote.parentNode.removeChild(this.delNoteClickable);
+        me.save();
     };
-    this.editedNote.parentNode.appendChild(delx);
+    this.editedNote.parentNode.appendChild(this.delNoteClickable);
     this.editedNote.focus();
 };
 
@@ -95,8 +104,8 @@ StickyNoteModule.prototype.cancelEdit = function (event) {
         this.editedNote.className = this.editedNote.className.replace(/ noselect/, "");
         this.editedNote.className += " noselect";
         this.editedNote.style.boxShadow = "1px 1px 5px rgba(0,0,0,.5)";
-        this.editedNote.onmousedown = pickupNote;
-        triggerSave(this.editedNote.parentNode);
+        this.editedNote.onmousedown = this.pickupNote.bind(this);
+        this.save();
         this.editedNote = null;
         this.baseModuleNode.removeChild(this.delNoteClickable);
     }
@@ -110,8 +119,8 @@ StickyNoteModule.prototype.pickupNote = function (event) {
     this.heldNote.style.zIndex = this.currentZIndex;
     var noteBoundaries = this.heldNote.getBoundingClientRect();
     var containerBoundaries = this.baseModuleNode.getBoundingClientRect();
-    var offsetX = noteBoundaries.left - this.mouseTracker.x - containerBoundaries.left - 6;
-    var offsetY = noteBoundaries.top - this.mouseTracker.y - containerBoundaries.top - 6;
+    var offsetX = noteBoundaries.left - this.mouseTracker.x - containerBoundaries.left - mbw;
+    var offsetY = noteBoundaries.top - this.mouseTracker.y - containerBoundaries.top - mbw;
 
     clearInterval(me.mti);
     me.mti = window.setInterval(function(){
