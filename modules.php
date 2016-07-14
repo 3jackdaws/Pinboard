@@ -21,13 +21,10 @@ $response = [];
 switch ($action){
     case "get":
     {
-        $hash = $_POST['hash'];
         $response['payload'] = getModule($module_guid);
-        if($response['payload'] == null){
+        if($response['payload'] == null) {
             $response['error'] = true;
             $response['message'][] = "No module with that MID was found";
-        }else if($response['payload']['hash'] == $hash){
-            $response['payload'] = null;
         }
         break;
     }
