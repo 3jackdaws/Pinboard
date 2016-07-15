@@ -30,5 +30,6 @@ $db->query("CREATE TABLE modules
 guid VARCHAR (38),
 type VARCHAR (64),
 belongs_to VARCHAR (38),
+updated TIMESTAMP, 
 data TEXT (65400)
 );");

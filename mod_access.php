@@ -47,11 +47,7 @@ switch ($action){
     case "get":
     {
         $module = $mod_instance->get($module_guid);
-        $response['payload'] = $mod_instance->processOutgoingModule($module);
-        if($response['payload'] == null) {
-            $response['error'] = true;
-            $response['message'][] = "No module with that MID was found";
-        }
+        echo json_encode($mod_instance->processOutgoingModule($module));
         break;
     }
     case "update":
@@ -75,8 +71,6 @@ switch ($action){
 
     }
 }
-
-echo json_encode($response);
 
 function getModule($guid){
     $sql = "SELECT * FROM modules WHERE guid=:guid;";

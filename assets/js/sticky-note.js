@@ -36,10 +36,17 @@ var StickyNoteModule = function(mid, classname){
     this.mti = null;
     this.numNotes = 0;
     this.maxNotes = 32;
-    this.refreshInterval = window.setInterval(function(){me.refresh()}, 2000);
     this.notes = {};
     this.saveInterval = null;
     this.lastAccess = null;
+    this.SlipStream = new SlipStream("/ss.php");
+    this.noteCache = null;
+    this.SlipStream.onserverpush = function (data) {
+        me.noteCache = JSON.parse(JSON.parse(JSON.parse(data)[0].data));
+        me.refresh();
+    }
+    this.SlipStream.open("module=" + mid);
+
 };
 
 StickyNoteModule.prototype.createBaseModuleNode = function(classname){
@@ -58,11 +65,12 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
 
 StickyNoteModule.prototype.refresh = function () {
     if(this.heldNote || this.editedNote) return;
-    this.loadModule();
+        this.changeNotes();
 };
 
 StickyNoteModule.prototype.createNewStickyNote = function (text, x, y, z, guid) {
-    if(this.numNotes > this.maxNotes) return;
+    if(this.numNotes >= this.maxNotes) return;
+    if(guid == null) guid = getGuid();
     this.numNotes++;
     var note = document.createElement("textarea");
     note.className = "sticky-note noselect";
@@ -84,7 +92,7 @@ StickyNoteModule.prototype.createNewStickyNote = function (text, x, y, z, guid) 
 };
 
 StickyNoteModule.prototype.addBlankStickyNote = function () {
-    this.createNewStickyNote("", 10, 10, this.currentZIndex);
+    this.createNewStickyNote("", 10, 10, this.currentZIndex, null);
     this.save();
 };
 
@@ -98,7 +106,7 @@ StickyNoteModule.prototype.editNote = function (event) {
     this.editedNote.onmousedown = null;
     this.editedNote.readOnly = false;
 
-    // console.log(this.editedNote);
+
     var noteDim = this.editedNote.getBoundingClientRect();
     var parentRect = this.baseModuleNode.getBoundingClientRect();
     this.delNoteClickable.style.left = noteDim.left - parentRect.left;
@@ -164,7 +172,6 @@ StickyNoteModule.prototype.putDownNote = function () {
     if(this.heldNote){
         var debugrect = this.heldNote.getBoundingClientRect();
         var debugmod = this.heldNote.parentNode.getBoundingClientRect();
-        console.log(debugrect.left + " " + debugrect.top);
         clearInterval(this.mti);
         this.heldNote = null;
         this.save();
@@ -175,7 +182,7 @@ StickyNoteModule.prototype.putDownNote = function () {
 StickyNoteModule.prototype.save = function () {
     var noteStack = [];
     var me = this;
-    console.log("Save");
+
     me.forEachNote(function (card) {
         var id = card.getAttribute("guid");
         var position = card.getBoundingClientRect();
@@ -190,15 +197,14 @@ StickyNoteModule.prototype.save = function () {
         noteStack.push(note);
     });
     var json = JSON.stringify(noteStack);
-    console.log(json);
+
     $.post("/mod_access.php", {
         action:"update",
         class: "StickyNote",
         module:me.mid,
         data:json
     }, function(data){
-        var response = JSON.parse(data);
-        console.log(response);
+
     });
 };
 
@@ -208,6 +214,7 @@ StickyNoteModule.prototype.logMouse = function (event) {
 }
 
 StickyNoteModule.prototype.loadModule = function(){
+
     this.baseModuleNode.addEventListener("mousemove", this.logMouse.bind(this));
     var me = this;
     $.post("/mod_access.php", {
@@ -216,58 +223,57 @@ StickyNoteModule.prototype.loadModule = function(){
         module:me.mid,
         last: me.lastAccess
     }, function(data){
-        var response = JSON.parse(data);
-        var module = response.payload;
-        if(!module){
-            console.log(response);
-            return;
-        }
-        var data = JSON.parse(module.data);
-        var notes = JSON.parse(data);
-        me.lastAccess = module.time;
-        var newNotes = [];
-        console.log("Retrieved " + notes.length + " notes");
-        foreach(notes, function(note){
-            var id = note.guid;
-            newNotes[id] = true;
-            if(id in me.notes){
-                if(note != me.heldNote && note != me.editedNote){
-                    var mx =  note.left - parseInt(me.notes[id].style.left);
-                    var my =  note.top - parseInt(me.notes[id].style.top);
-                    console.log("M: " + mx + " " + my);
-                    if(Math.abs(mx) > 1 || Math.abs(my) > 1){
-                        me.notes[id].style.transition = 'all 0.5s';
-                        me.notes[id].style.transform = 'translate('+mx+'px, '+my+'px)';
-                        me.notes[id].style.text = note.text;
-                        console.log("Change pos of: " + id);
-                        var x = note.left;
-                        var y = note.top;
-                        console.log("X: " + x + " " + y);
-                        window.setTimeout(function () {
-                            me.notes[id].style.transition = 'none';
-                            me.notes[id].style.transform = 'none';
-                            me.notes[id].style.left = x;
-                            me.notes[id].style.top = y;
-                            console.log(me.notes[id].style.top + " " + me.notes[id].style.left);
-                        }, 500);
-                    }
+        me.noteCache = JSON.parse(JSON.parse(JSON.parse(data)[0].data));
+        me.refresh();
+    });
+};
+
+
+StickyNoteModule.prototype.changeNotes = function () {
+    console.log("Change");
+    var me = this;
+    var notes = this.noteCache;
+    var newNotes = [];
+    foreach(notes, function(note){
+        var id = note.guid;
+        newNotes[id] = true;
+        if(id in me.notes){
+            if(note != me.heldNote && note != me.editedNote){
+                var mx =  note.left - parseInt(me.notes[id].style.left);
+                var my =  note.top - parseInt(me.notes[id].style.top);
+                me.notes[id].value = note.text;
+                if(Math.abs(mx) > 1 || Math.abs(my) > 1){
+                    me.notes[id].style.transition = 'all 0.5s';
+                    me.notes[id].style.transform = 'translate('+mx+'px, '+my+'px)';
+
+
+                    var x = note.left;
+                    var y = note.top;
+
+                    window.setTimeout(function () {
+                        me.notes[id].style.transition = 'none';
+                        me.notes[id].style.transform = 'none';
+                        me.notes[id].style.left = x;
+                        me.notes[id].style.top = y;
+
+                    }, 500);
                 }
-
-            }else{
-                me.createNewStickyNote(note.text, note.left, note.top, note.z, note.guid);
-                console.log("Create new note");
             }
-        });
-        console.log(newNotes);
-        for(var note in me.notes){
-            console.log("note id: " + note);
-            if(note in newNotes){
 
-            }else{
-                me.baseModuleNode.removeChild(me.notes[note]);
-            }
+        }else{
+            me.createNewStickyNote(note.text, note.left, note.top, note.z, note.guid);
+
         }
     });
+
+    for(var note in me.notes){
+
+        if(note in newNotes){
+
+        }else{
+            me.baseModuleNode.removeChild(me.notes[note]);
+        }
+    }
 };
 
 StickyNoteModule.prototype.forEachNote = function (func) {
@@ -278,7 +284,7 @@ StickyNoteModule.prototype.forEachNote = function (func) {
     }
 }
 
-function guid() {
+function getGuid() {
     function s4() {
         return Math.floor((1 + Math.random()) * 0x10000)
             .toString(16)

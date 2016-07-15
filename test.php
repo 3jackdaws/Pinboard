@@ -8,22 +8,21 @@
 
 ?>
 <head>
-    <script src="assets/js/Comet.js"></script>
+    <script src="assets/js/SlipStream.js"></script>
 </head>
 <body>
 
 
 </body>
 <script>
-    var comet = [];
+    var mod_ss = [];
     window.addEventListener("load", function () {
-        for (var i = 0; i<2; i++){
-            var c = new Comet("/comet.php");
+        for (var i = 0; i<1; i++){
+            var c = new SlipStream("/ss.php");
             c.onserverpush = function(data){
                 document.body.innerHTML += data;
             };
-            c.open("welcome=" + i);
-            comet.push(c);
+            c.open("module=left" );
         }
     });
 </script>

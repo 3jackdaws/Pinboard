@@ -21,7 +21,7 @@ class Web{
             <script src="/assets/js/jquery.min.js"></script>
             <script src="/assets/js/bootstrap.min.js"></script>
             <script src="/assets/js/sticky-note.js"></script>
-            <script src="/assets/js/Comet.js"></script>
+            <script src="/assets/js/SlipStream.js"></script>
 
         </head>
 

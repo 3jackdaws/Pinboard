@@ -2,14 +2,14 @@
  * Created by ian on 7/14/16.
  */
 
-var Comet = function(resource){
+var SlipStream = function(resource){
     this.resource = resource;
     this.xhr = null;
-    this.onserverpush = function(){console.error("Must set Comet.onserverpush to a handler function")};
+    this.onserverpush = function(){console.error("Must set SlipStream.onserverpush to a handler function")};
     this.requestdata = null;
 };
 
-Comet.prototype.open = function (data) {
+SlipStream.prototype.open = function (data) {
     var self = this;
     this.requestdata = data;
     this.xhr = new XMLHttpRequest();
@@ -22,5 +22,6 @@ Comet.prototype.open = function (data) {
     this.xhr.open("POST", this.resource, true);
     this.xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     this.xhr.send(data);
+    console.log("Send");
 };
 
