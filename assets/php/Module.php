@@ -11,19 +11,34 @@
  * Class Module
  * Base class for modules
  */
+set_include_path(realpath($_SERVER['DOCUMENT_ROOT']) . '/assets/php');
+require_once 'Database.php';
 
-
-class Module
+abstract class Module
 {
-    private $_module_data = [];
-    public function save(){
-        $sql = "INSERT INTO modules (guid, type, belongs_to, data) VALUES(:guid, :type, :belongs_to, :data) ON DUPLICATE KEY UPDATE    
-                type=:type, belongs_to=:belongs_to, data=:data;";
+    protected $_module_data = [];
+    public function get($guid){
+        $sql = "SELECT * FROM modules WHERE guid=:guid;";
         $statement = Database::connect()->prepare($sql);
-        $statement->bindParam(':guid', $this->_board_data['guid']);
-        $statement->bindParam(':type', $this->_board_data['type']);
-        $statement->bindParam(':belongs_to', $this->_board_data['belongs_to']);
-        $statement->bindParam(':data', json_encode($this->_board_data['data']));
+        $statement->bindParam(':guid', $guid);
         $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC)[0];
+    }
+
+    public abstract function update($guid, $class, $data);
+
+    public function delete($guid){
+        $sql = "DELETE FROM modules WHERE guid=:guid;";
+        $statement = Database::connect()->prepare($sql);
+        $statement->bindParam(':guid', $guid);
+        $statement->execute();
+    }
+    
+    public function processIncomingModule($module){
+        return $module;
+    }
+    
+    public function processOutgoingModule($module){
+        return $module;
     }
 }

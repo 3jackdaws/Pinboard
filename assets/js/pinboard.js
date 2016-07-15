@@ -173,7 +173,7 @@ function saveModule(module){
     });
 
     var json = JSON.stringify(noteStack);
-    $.post("/modules.php", {
+    $.post("/mod_access.php", {
         action:"update",
         module:guid,
         data:json,
@@ -188,7 +188,7 @@ function loadModule(mod){
     var muid = mod.getAttribute('guid');
     mod.addEventListener("mousemove", logmouse);
     modMouseTracker[muid] = {};
-    $.post("/modules.php", {
+    $.post("/mod_access.php", {
         action:"get",
         module:muid,
         hash:lastUpdate[muid]

@@ -83,6 +83,9 @@ body{
     height: 50%;
 }
 
+textarea:focus::-webkit-input-placeholder{
+    color: transparent;
+}
 
 
 
