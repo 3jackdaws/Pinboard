@@ -18,7 +18,7 @@ do{
     usleep(100000);
     $statement->execute();
     $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-}while(count($result) ==0 );
+}while(count($result) == 0 );
 //var_dump($_POST);
 echo json_encode($result);
 
