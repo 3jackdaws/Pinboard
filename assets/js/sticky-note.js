@@ -25,6 +25,7 @@ function putDownAll(event){
 var StickyNoteModule = function(mid, classname){
     var me = this;
     this.mid = mid;
+    this.version = "Version 0.3.5";
     this.createBaseModuleNode(classname);
     this.currentZIndex = null;
     this.editedNote = null;
@@ -61,6 +62,7 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
     addNoteButton.style.right = 15;
     addNoteButton.style.bottom = 10;
     this.baseModuleNode.appendChild(addNoteButton);
+    // this.baseModuleNode.innerHTML += this.version;
 };
 
 StickyNoteModule.prototype.refresh = function () {
@@ -249,12 +251,14 @@ StickyNoteModule.prototype.changeNotes = function () {
 
                     var x = note.left;
                     var y = note.top;
+                    var z = note.z;
 
                     window.setTimeout(function () {
                         me.notes[id].style.transition = 'none';
                         me.notes[id].style.transform = 'none';
                         me.notes[id].style.left = x;
                         me.notes[id].style.top = y;
+                        me.notes[id].style.zIndex = z;
 
                     }, 500);
                 }

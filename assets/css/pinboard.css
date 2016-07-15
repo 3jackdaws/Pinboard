@@ -1,5 +1,6 @@
 .navbar{
     padding-left: 10px;
+    padding-right: 20px;
 }
 .navbar-brand {
     transform: translateX(-50%);
@@ -43,6 +44,7 @@ body{
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    color: #777;
 }
 
 .sticky-note{
@@ -53,9 +55,11 @@ body{
     /*background-color: #ffee99;*/
     resize: none;
     padding: 10px;
+    padding-top: 15px;
     cursor: text;
     border: 1px solid #ddcc66;
     -webkit-appearance: none;
+    color: #111;
 }
 
 .sticky-note id{

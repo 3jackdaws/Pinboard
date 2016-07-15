@@ -47,17 +47,21 @@ class Web{
                     <li>
                         <div class="btn-group navbar-btn">
                             <button data-toggle="dropdown" class="btn btn-dark dropdown-toggle">Boards</button>
-                            <ul class="dropdown-menu" style="margin-top: 13px;">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
+                            <ul class="dropdown-menu" style="margin-top: 18px;">
+                                <li><button class="btn btn-default" href="#" style="width: 200px; margin: 10px;">Board 1</button></li>
+                                <li><button class="btn btn-default" href="#" style="width: 200px; margin: 10px;">Board 2</button></li>
+                                <li><button class="btn btn-default" href="#" style="width: 200px; margin: 10px;">Board 3</button></li>
+
                             </ul>
                         </div>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <div class="btn-group navbar-btn">
+                            <button class="btn btn-dark dropdown-toggle">Version 0.3.5</button>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </nav>
