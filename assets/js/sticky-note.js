@@ -48,7 +48,7 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
     this.baseModuleNode.className = "module sticky-note-module " + classname;
     this.baseModuleNode.setAttribute('guid', this.mid);
     var addNoteButton = document.createElement('a');
-    addNoteButton.onclick = this.createNewStickyNote.bind(this, null, 10, 10, 9999);
+    addNoteButton.onclick = this.addBlankStickyNote.bind(this);
     addNoteButton.innerHTML = '<span class="glyphicon glyphicon-plus-sign"></span>';
     addNoteButton.style.position = 'absolute';
     addNoteButton.style.right = 15;
