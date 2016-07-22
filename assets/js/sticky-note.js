@@ -27,7 +27,6 @@ function putDownAll(event){
 var StickyNoteModule = function(mid, classname){
     var me = this;
     this.mid = mid;
-    this.version = "Version 0.3.5";
     this.createBaseModuleNode(classname);
     this.currentZIndex = null;
     this.editedNote = null;
@@ -41,7 +40,6 @@ var StickyNoteModule = function(mid, classname){
     this.maxNotes = 16;
     this.notes = {};
     this.saveInterval = null;
-    this.lastAccess = null;
     this.noteCache = null;
     SlipStream.register({StickyNote:mid}, function (data) {
         console.log(data);
@@ -64,7 +62,6 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
     addNoteButton.style.right = 15;
     addNoteButton.style.bottom = 10;
     this.baseModuleNode.appendChild(addNoteButton);
-    // this.baseModuleNode.innerHTML += this.version;
 };
 
 StickyNoteModule.prototype.refresh = function () {

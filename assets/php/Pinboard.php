@@ -2,73 +2,58 @@
 
 /**
  * Created by PhpStorm.
- * User: Ian Murphy
- * Date: 7/10/2016
- * Time: 10:04 PM
+ * User: ian
+ * Date: 7/11/16
+ * Time: 2:10 PM
+ */
+
+/**
+ * Class Module
+ * Base class for modules
  */
 set_include_path(realpath($_SERVER['DOCUMENT_ROOT']) . '/assets/php');
-require 'Database.php';
-
+require_once 'Database.php';
 
 class Pinboard
 {
-    private $_connection;
-    private $_board_data = [];
-    private $_modules = [];
-
-    public function __construct(){
-        $this->_connection = Database::connect();
-        $this->_board_data['guid'] = Database::getGUID();
-    }
-
-    public static function getBoardByGUID($guid){
-        $sql = "SELECT * FROM boards WHERE board_guid=:guid;";
+    protected $_module_data = [];
+    public static function get($guid){
+        $sql = "SELECT * FROM boards WHERE guid=:guid;";
         $statement = Database::connect()->prepare($sql);
         $statement->bindParam(':guid', $guid);
         $statement->execute();
-        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
-        var_dump($results);
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC)[0];
+        $result['data'] = json_decode($result['data']);
+        return $result;
     }
 
-    public function save(){
-        $sql = "INSERT INTO boards (guid, name, owner, participants, data) VALUES(:guid, :name, :owner, :part, :data) ON DUPLICATE KEY UPDATE    
-                name=:name, owner=:owner, participants=:part, data=:data;";
+    public static function update($guid, $data){
+        $name = $data['name'];
+        $owner = $data['owner'];
+        $participants = $data['participants'];
+        $data_json = json_encode($data['data']);
+        $sql = "INSERT INTO boards (guid, name, owner, participants, data) VALUES(:guid, :name, :owner, :part, :data) ON DUPLICATE KEY UPDATE guid=:guid, name=:name, owner=:owner, participants=:part, data=:data;";
         $statement = Database::connect()->prepare($sql);
-        $statement->bindParam(':guid', $this->_board_data['guid']);
-        $statement->bindParam(':name', $this->_board_data['name']);
-        $statement->bindParam(':owner', $this->_board_data['owner']);
-        $statement->bindParam(':part', json_encode($this->_board_data['part']));
-        $statement->bindParam(':data', json_encode($this->_board_data['data']));
+        $statement->bindParam(':guid', $guid);
+        $statement->bindParam(':name', $name);
+        $statement->bindParam(':owner', $owner);
+        $statement->bindParam(':part', $participants);
+        $statement->bindParam(':data', $data_json);
+        return $statement->execute();
+    }
+
+    public static function delete($guid){
+        $sql = "DELETE FROM boards WHERE guid=:guid;";
+        $statement = Database::connect()->prepare($sql);
+        $statement->bindParam(':guid', $guid);
         $statement->execute();
     }
 
-    public function setBoardName($name){
-        $this->_board_data['name'] = $name;
-    }
-    
-    public function setOwner($owner_guid){
-        $this->_board_data['owner'] = $owner_guid;
-        if(array_search($owner_guid, $this->_board_data['participants']) == false){
-            $this->_board_data['participants'][] = $owner_guid;
-        }
+    public function processIncomingModule($module){
+        return $module;
     }
 
-    public function addParticipant($p_guid){
-        if(array_search($p_guid, $this->_board_data['participants']) == false){
-            $this->_board_data['participants'][] = $p_guid;
-        }
-    }
-
-    public function addModule($module_guid){
-        $this->_modules[] = $module_guid;
-    }
-
-    public static function boardExists($board_guid){
-        $sql = "SELECT * FROM boards WHERE guid=:guid;";
-        $statement = Database::connect()->prepare($sql);
-        $statement->bindParam(':guid', $board_guid);
-        $statement->execute();
-        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
-        return count($results) > 0;
+    public function processOutgoingModule($module){
+        return $module;
     }
 }
