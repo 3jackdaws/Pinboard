@@ -2,6 +2,6 @@
 Room mate task scheduler website
 
 
-https://trello.com/b/RclWSyx5/roomie-pinboard
+https://pinboard.isogen.net
 
 test
