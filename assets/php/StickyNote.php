@@ -11,24 +11,29 @@ require 'Module.php';
 
 class StickyNote extends Module
 {
-    public function update($guid, $class, $data){
-        
-        $sql = "INSERT INTO modules (guid, type, belongs_to, data) VALUES(:guid, :type, :belongs_to, :data) ON DUPLICATE KEY UPDATE    
-                type=:type, belongs_to=:belongs_to, data=:data;";
-        $data_json = json_encode($data);
-        $statement = Database::connect()->prepare($sql);
-        $statement->bindParam(':guid', $guid);
-        $statement->bindParam(':type', $class);
-        $statement->bindParam(':belongs_to', $belongs_to);
-        $statement->bindParam(':data', $data_json);
-        return $statement->execute();
+    public function processIncomingModule($module_data)
+    {
+        error_log("PIR");
+        $data = $this->normalizeZIndex($module_data);
+        return $data;
     }
 
-    private function normalizeZIndex($module){
-
+    private function normalizeZIndex($data){
+        $largest = 0;
+        uasort($data, function($a,$b){
+            return $a['z'] <=> $b['z'];
+        });
+        $z = 1;
+        foreach ($data as &$note){
+            $note['z'] = $z++;
+        }
+        ob_start();
+        var_dump($data);
+        $str = ob_get_clean();
+        $fp = fopen("/Users/ian/var_dump.txt", "w");
+        fwrite($fp, $str);
+        fclose($fp);
+        return $data;
     }
 
-    private function parseModule($module){
-        $this->_module_data = $module;
-    }
 }

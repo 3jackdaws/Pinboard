@@ -53,6 +53,7 @@ switch ($action){
     case "update":
     {
         $data = $_POST['data'];
+        $mod_instance->processIncomingModule($data);
         $response['saved'] = $mod_instance->update($module_guid, $class, $data);
 
         echo json_encode($response);

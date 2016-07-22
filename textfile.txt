@@ -1,0 +1,67 @@
+array(5) {
+  [0]=>
+  array(5) {
+    ["guid"]=>
+    string(36) "eadf8061-5678-b82d-c76b-c892b2259835"
+    ["top"]=>
+    string(3) "148"
+    ["left"]=>
+    string(2) "98"
+    ["text"]=>
+    string(0) ""
+    ["z"]=>
+    string(1) "9"
+  }
+  [1]=>
+  array(5) {
+    ["guid"]=>
+    string(36) "91723a98-491a-8f64-7e85-f44b7fedb52e"
+    ["top"]=>
+    string(3) "145"
+    ["left"]=>
+    string(3) "605"
+    ["text"]=>
+    string(0) ""
+    ["z"]=>
+    string(2) "12"
+  }
+  [2]=>
+  array(5) {
+    ["guid"]=>
+    string(36) "50597f63-02bf-e316-d5b0-275f58fe2594"
+    ["top"]=>
+    string(3) "398"
+    ["left"]=>
+    string(3) "477"
+    ["text"]=>
+    string(0) ""
+    ["z"]=>
+    string(1) "7"
+  }
+  [3]=>
+  array(5) {
+    ["guid"]=>
+    string(36) "b083d7cd-0338-6d66-acda-3c911423ae89"
+    ["top"]=>
+    string(3) "102"
+    ["left"]=>
+    string(3) "980"
+    ["text"]=>
+    string(0) ""
+    ["z"]=>
+    string(1) "2"
+  }
+  [4]=>
+  array(5) {
+    ["guid"]=>
+    string(36) "d7cb4d17-6175-fd87-03bc-ea968883a190"
+    ["top"]=>
+    string(3) "407"
+    ["left"]=>
+    string(10) "397.859375"
+    ["text"]=>
+    string(72) "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN"
+    ["z"]=>
+    string(1) "7"
+  }
+}

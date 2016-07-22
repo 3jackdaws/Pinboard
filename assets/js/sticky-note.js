@@ -252,6 +252,7 @@ StickyNoteModule.prototype.changeNotes = function () {
     var notes = this.noteCache;
     var newNotes = [];
     foreach(notes, function(note){
+        me.currentZIndex < note.z ? me.currentZIndex=note.z : null;
         var id = note.guid;
         newNotes[id] = true;
         if(id in me.notes){
