@@ -53,8 +53,9 @@ switch ($action){
     case "update":
     {
         $data = $_POST['data'];
-        $mod_instance->update($module_guid, $class, $data);
-        $response['message'] = "Saved";
+        $response['saved'] = $mod_instance->update($module_guid, $class, $data);
+
+        echo json_encode($response);
         break;
     }
     case "put":
@@ -70,24 +71,5 @@ switch ($action){
     {
 
     }
-}
 
-function getModule($guid){
-    $sql = "SELECT * FROM modules WHERE guid=:guid;";
-    $statement = Database::connect()->prepare($sql);
-    $statement->bindParam(':guid', $guid);
-    $statement->execute();
-    return $statement->fetchAll(PDO::FETCH_ASSOC)[0];
-}
-
-function updateModule($guid, $data){
-    $sql = "INSERT INTO modules (guid, type, belongs_to, data) VALUES(:guid, :type, :belongs_to, :data) ON DUPLICATE KEY UPDATE    
-                type=:type, belongs_to=:belongs_to, data=:data;";
-    $data_json = json_encode($data);
-    $statement = Database::connect()->prepare($sql);
-    $statement->bindParam(':guid', $guid);
-    $statement->bindParam(':type', $type);
-    $statement->bindParam(':belongs_to', $belongs_to);
-    $statement->bindParam(':data', $data_json);
-    $statement->execute();
 }

@@ -3,6 +3,7 @@
  */
 
 var stickymodules = [];
+SlipStream.setResource("/ss.php");
 var mbw = 2;
 document.addEventListener("mouseup", putDownAll);
 window.addEventListener("load", function(){
@@ -11,7 +12,8 @@ window.addEventListener("load", function(){
     foreach(stickymodules, function (mod) {
         mod.loadModule();
         document.body.appendChild(mod.baseModuleNode);
-    })
+    });
+    SlipStream.open();
 });
 
 function putDownAll(event){
@@ -40,13 +42,13 @@ var StickyNoteModule = function(mid, classname){
     this.notes = {};
     this.saveInterval = null;
     this.lastAccess = null;
-    this.SlipStream = new SlipStream("/ss.php");
     this.noteCache = null;
-    this.SlipStream.onserverpush = function (data) {
-        me.noteCache = JSON.parse(JSON.parse(JSON.parse(data)[0].data));
+    SlipStream.register({StickyNote:mid}, function (data) {
+        console.log(data);
+        me.noteCache = data.data;
+        // console.log(me.noteCache);
         me.refresh();
-    }
-    this.SlipStream.open("module=" + mid);
+    });
 
 };
 
@@ -181,6 +183,18 @@ StickyNoteModule.prototype.putDownNote = function () {
     }
 };
 
+StickyNoteModule.prototype.normalize = function () {
+    var lowest = 9999999;
+    this.forEachNote(function (note) {
+        if(note.style.zIndex < lowest) lowest = note.style.zIndex;
+    });
+    lowest-=2;
+    console.log(lowest);
+    this.forEachNote(function (note) {
+        note.style.zIndex -= lowest;
+    });
+}
+
 StickyNoteModule.prototype.save = function () {
     var noteStack = [];
     var me = this;
@@ -193,20 +207,21 @@ StickyNoteModule.prototype.save = function () {
         note["guid"] = id;
         note["top"] = position.top - parentPosition.top - mbw;
         note["left"] = position.left - parentPosition.left - mbw;
-
+        if(note['top'] < 0) note['top'] = 10;
+        if(note['left'] < 0) note['left'] = 10;
         note["text"] = card.value;
         note["z"] = card.style.zIndex;
         noteStack.push(note);
     });
-    var json = JSON.stringify(noteStack);
+    // var json = JSON.stringify(noteStack);
 
     $.post("/mod_access.php", {
         action:"update",
         class: "StickyNote",
         module:me.mid,
-        data:json
+        data:noteStack
     }, function(data){
-
+        console.log(data);
     });
 };
 
@@ -222,17 +237,17 @@ StickyNoteModule.prototype.loadModule = function(){
     $.post("/mod_access.php", {
         action:"get",
         class:'StickyNote',
-        module:me.mid,
-        last: me.lastAccess
+        module:me.mid
     }, function(data){
-        me.noteCache = JSON.parse(JSON.parse(JSON.parse(data)[0].data));
+        // console.log(JSON.parse(data));
+        me.noteCache = JSON.parse(data).data;
         me.refresh();
     });
 };
 
 
 StickyNoteModule.prototype.changeNotes = function () {
-    console.log("Change");
+    // console.log("Change");
     var me = this;
     var notes = this.noteCache;
     var newNotes = [];
@@ -240,6 +255,7 @@ StickyNoteModule.prototype.changeNotes = function () {
         var id = note.guid;
         newNotes[id] = true;
         if(id in me.notes){
+            me.notes[id].style.zIndex = note.z;
             if(note != me.heldNote && note != me.editedNote){
                 var mx =  note.left - parseInt(me.notes[id].style.left);
                 var my =  note.top - parseInt(me.notes[id].style.top);
@@ -247,18 +263,15 @@ StickyNoteModule.prototype.changeNotes = function () {
                 if(Math.abs(mx) > 1 || Math.abs(my) > 1){
                     me.notes[id].style.transition = 'all 0.5s';
                     me.notes[id].style.transform = 'translate('+mx+'px, '+my+'px)';
-
-
                     var x = note.left;
                     var y = note.top;
-                    var z = note.z;
 
                     window.setTimeout(function () {
                         me.notes[id].style.transition = 'none';
                         me.notes[id].style.transform = 'none';
                         me.notes[id].style.left = x;
                         me.notes[id].style.top = y;
-                        me.notes[id].style.zIndex = z;
+
 
                     }, 500);
                 }

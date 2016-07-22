@@ -10,17 +10,23 @@ require_once 'SlipStream.php';
 require_once 'Database.php';
 date_default_timezone_set('America/Los_Angeles');
 $time = date('Y-m-d G:i:s');
-$sql = "SELECT * FROM modules WHERE guid=:guid AND updated > :timestamp;";
-$statement = Database::connect()->prepare($sql);
-$statement->bindParam(":guid", $_POST['module']);
-$statement->bindParam(":timestamp", $time);
-do{
-    usleep(100000);
-    $statement->execute();
+$ss = new SlipStream();
+$ss->register("StickyNote", function ($mid) use ($time){
+    $sql = "SELECT * FROM modules WHERE guid=:guid AND updated > :timestamp;";
+    $statement = Database::connect()->prepare($sql);
+    $statement->bindParam(":guid", $mid);
+    $statement->bindParam(":timestamp", $time);
+    if(!$statement->execute()) $time = "Error";
     $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-}while(count($result) == 0 );
-//var_dump($_POST);
-echo json_encode($result);
+    if(count($result) > 0){
+        $mod = $result[0];
+        $mod['data'] = json_decode($mod['data']);
+        return $mod;
+    }
+    else return null;
+});
+
+$ss->accept();
 
 
 

@@ -21,7 +21,7 @@ class StickyNote extends Module
         $statement->bindParam(':type', $class);
         $statement->bindParam(':belongs_to', $belongs_to);
         $statement->bindParam(':data', $data_json);
-        $statement->execute();
+        return $statement->execute();
     }
 
     private function normalizeZIndex($module){

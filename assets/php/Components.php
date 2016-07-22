@@ -20,8 +20,9 @@ class Web{
             <link href="/assets/css/pinboard.css" rel="stylesheet">
             <script src="/assets/js/jquery.min.js"></script>
             <script src="/assets/js/bootstrap.min.js"></script>
-            <script src="/assets/js/sticky-note.js"></script>
             <script src="/assets/js/SlipStream.js"></script>
+            <script src="/assets/js/sticky-note.js"></script>
+
 
         </head>
 

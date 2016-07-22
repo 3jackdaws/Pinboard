@@ -38,7 +38,7 @@ body{
     box-shadow: inset 5px 5px 20px rgba(0,0,0,.5);
     background: transparent;
     height: 100%;
-    overflow: hidden;
+    overflow: scroll;
     position: relative;
     float: left;
     -webkit-user-select: none;
@@ -48,8 +48,8 @@ body{
 }
 
 .sticky-note{
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     box-shadow: 1px 1px 5px rgba(0,0,0,.5);
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAAXNSR0IArs4c6QAAADhJREFUCB1j/P9u5hkGBsYGBjD4D6ZZIBwQCRKASDJBGBAVEAkGBqAgCMC0g+j/DUDtMFUwCQYGALW4D2DIX5GaAAAAAElFTkSuQmCC);
     /*background-color: #ffee99;*/

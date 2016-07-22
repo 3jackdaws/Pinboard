@@ -22,7 +22,9 @@ abstract class Module
         $statement = Database::connect()->prepare($sql);
         $statement->bindParam(':guid', $guid);
         $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC)[0];
+        $result['data'] = json_decode($result['data']);
+        return $result;
     }
 
     public abstract function update($guid, $class, $data);
