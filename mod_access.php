@@ -8,6 +8,7 @@
 set_include_path(realpath($_SERVER['DOCUMENT_ROOT']) . '/assets/php');
 require_once 'Database.php';
 require 'StickyNote.php';
+require_once 'Module.php';
 
 
 /**
@@ -36,7 +37,7 @@ switch(strtolower($class)){
     }
     default:
     {
-        die("No module with that type is available");
+        $mod_instance = new Module();
     }
 }
 

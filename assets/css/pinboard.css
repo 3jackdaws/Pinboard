@@ -1,6 +1,7 @@
 .navbar{
     padding-left: 10px;
     padding-right: 20px;
+    z-index: 2147483647;
 }
 .navbar-brand {
     transform: translateX(-50%);
@@ -38,7 +39,7 @@ body{
     box-shadow: inset 5px 5px 20px rgba(0,0,0,.5);
     background: transparent;
     height: 100%;
-    overflow: scroll;
+    overflow: hidden;
     position: relative;
     float: left;
     -webkit-user-select: none;
@@ -66,6 +67,14 @@ body{
     visibility: hidden;
 }
 
+.add-note-button{
+    color: lightgrey;
+}
+
+.add-note-button:hover{
+    color: black;
+}
+
 .noselect{
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -91,6 +100,44 @@ textarea:focus::-webkit-input-placeholder{
     color: transparent;
 }
 
+.add-mod-modal{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 40%;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid lightgrey;
+    border-radius: 6px;
+    visibility: hidden;
+    z-index: 10000;
+    box-shadow: 2px 2px 5px rgba(0,0,0,.5);
+    background-color: #f1f1f1;
+    text-align: center;
+    padding: 20px;
+}
+
+.pinboard{
+    position: relative;
+}
+
+table.config{
+    border: 1px solid lightgrey;
+    margin: 0 auto;
+}
+table.config td{
+    width: 80px;
+    height: 45px;
+    border: 1px solid lightblue;
+}
+
+table.config td:hover{
+    background-color: lightcyan;
+}
+
+table.config td.td-selected{
+    background-color: lightcyan;
+}
 
 
 

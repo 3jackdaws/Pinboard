@@ -14,7 +14,7 @@
 set_include_path(realpath($_SERVER['DOCUMENT_ROOT']) . '/assets/php');
 require_once 'Database.php';
 
-abstract class Module
+class Module
 {
     protected $_module_data = [];
     public function get($guid){

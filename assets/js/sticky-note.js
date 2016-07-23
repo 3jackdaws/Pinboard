@@ -2,22 +2,10 @@
  * Created by ian on 7/13/16.
  */
 
-var stickymodules = [];
-SlipStream.setResource("/ss.php");
-var mbw = 2;
 document.addEventListener("mouseup", putDownAll);
-window.addEventListener("load", function(){
-    stickymodules[0] = new StickyNoteModule('left', "");
-    // stickymodules[1] = new StickyNoteModule('right', "half-width");
-    foreach(stickymodules, function (mod) {
-        mod.loadModule();
-        document.body.appendChild(mod.baseModuleNode);
-    });
-    SlipStream.open();
-});
 
 function putDownAll(event){
-    foreach(stickymodules, function (e) {
+    foreach(board.moduleObjects, function (e) {
         e.putDownNote();
     });
 }
@@ -42,12 +30,11 @@ var StickyNoteModule = function(mid, classname){
     this.saveInterval = null;
     this.noteCache = null;
     SlipStream.register({StickyNote:mid}, function (data) {
-        console.log(data);
+        if(!data) return;
         me.noteCache = data.data;
-        // console.log(me.noteCache);
         me.refresh();
     });
-
+    this.loadModule();
 };
 
 StickyNoteModule.prototype.createBaseModuleNode = function(classname){
@@ -58,9 +45,11 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
     var addNoteButton = document.createElement('a');
     addNoteButton.onclick = this.addBlankStickyNote.bind(this);
     addNoteButton.innerHTML = '<span class="glyphicon glyphicon-plus-sign"></span>';
+    addNoteButton.className = "add-note-button";
     addNoteButton.style.position = 'absolute';
     addNoteButton.style.right = 15;
     addNoteButton.style.bottom = 10;
+    addNoteButton.style.zIndex = 999999999;
     this.baseModuleNode.appendChild(addNoteButton);
 };
 
@@ -112,7 +101,7 @@ StickyNoteModule.prototype.editNote = function (event) {
     var parentRect = this.baseModuleNode.getBoundingClientRect();
     this.delNoteClickable.style.left = noteDim.left - parentRect.left;
     this.delNoteClickable.style.top = noteDim.top - parentRect.top;
-    this.delNoteClickable.style.zIndex = this.currentZIndex + 10;
+    this.delNoteClickable.style.zIndex = 99999999999;
 
     this.delNoteClickable.onclick = function(){
         me.editedNote.parentNode.removeChild(me.delNoteClickable);
@@ -153,6 +142,7 @@ StickyNoteModule.prototype.cancelSave = function () {
 
 StickyNoteModule.prototype.pickupNote = function (event) {
     var me = this;
+
     this.heldNote = event.currentTarget;
     if(this.heldNote == null) return;
     this.currentZIndex++;
@@ -204,8 +194,10 @@ StickyNoteModule.prototype.save = function () {
         note["guid"] = id;
         note["top"] = position.top - parentPosition.top - mbw;
         note["left"] = position.left - parentPosition.left - mbw;
-        if(note['top'] < 0) note['top'] = 10;
-        if(note['left'] < 0) note['left'] = 10;
+        if(position.top + 30 < parentPosition.top) note['top'] = -30;
+        if(position.left + 30< parentPosition.left) note['left'] = -30;
+        if(position.right - 30 > parentPosition.right) note['left'] = parentPosition.width - 120;
+        if(position.bottom - 30> parentPosition.bottom) note['top'] = parentPosition.height - 120;
         note["text"] = card.value;
         note["z"] = card.style.zIndex;
         noteStack.push(note);
@@ -236,7 +228,7 @@ StickyNoteModule.prototype.loadModule = function(){
         class:'StickyNote',
         module:me.mid
     }, function(data){
-        // console.log(JSON.parse(data));
+
         me.noteCache = JSON.parse(data).data;
         me.refresh();
     });
@@ -311,7 +303,7 @@ function getGuid() {
 
 function foreach(list, mapfunc){
     var len = list.length;
-    for(var i = len-1; i>=0; i--){
+    for(var i = 0; i<len; i++){
         mapfunc(list[i]);
     }
 }

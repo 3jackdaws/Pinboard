@@ -22,7 +22,7 @@ class Web{
             <script src="/assets/js/bootstrap.min.js"></script>
             <script src="/assets/js/SlipStream.js"></script>
             <script src="/assets/js/sticky-note.js"></script>
-
+            <script src="/assets/js/Pinboard.js"></script>
 
         </head>
 
@@ -60,7 +60,7 @@ class Web{
                 <ul class="nav navbar-nav navbar-right">
                     <li>
                         <div class="btn-group navbar-btn">
-                            <button class="btn btn-dark dropdown-toggle">Version 0.3.5</button>
+                            <button class="btn btn-dark dropdown-toggle" href="https://github.com/3jackdaws/Pinboard/issues">Submit a bug</button>
                         </div>
                     </li>
                 </ul>

@@ -13,7 +13,6 @@ class StickyNote extends Module
 {
     public function processIncomingModule($module_data)
     {
-        error_log("PIR");
         $data = $this->normalizeZIndex($module_data);
         return $data;
     }

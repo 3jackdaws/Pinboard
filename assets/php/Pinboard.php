@@ -31,7 +31,9 @@ class Pinboard
         $name = $data['name'];
         $owner = $data['owner'];
         $participants = $data['participants'];
-        $data_json = json_encode($data['data']);
+        $real_data['modules'] = $data['modules'];
+        $real_data['config'] = $data['config'];
+        $data_json = json_encode($real_data);
         $sql = "INSERT INTO boards (guid, name, owner, participants, data) VALUES(:guid, :name, :owner, :part, :data) ON DUPLICATE KEY UPDATE guid=:guid, name=:name, owner=:owner, participants=:part, data=:data;";
         $statement = Database::connect()->prepare($sql);
         $statement->bindParam(':guid', $guid);
@@ -49,11 +51,69 @@ class Pinboard
         $statement->execute();
     }
 
+    public function load($guid){
+        $this->_module_data = self::get($guid);
+    }
+
     public function processIncomingModule($module){
         return $module;
     }
 
     public function processOutgoingModule($module){
         return $module;
+    }
+
+    private function writeModules($guid){
+        foreach($this->_module_data['data']['modules'] as $mod){
+            $module = Module::get($mod);
+            
+        }
+    }
+
+    public static function writeBase($mod_id){
+        ?>
+
+        <div id="board" class="pinboard">
+            <div class="pinboard-header">
+                <button class="btn btn-primary" onclick="board.addModule()">Add a Module</button>
+            </div>
+            <div class="col-lg-6 add-mod-modal">
+                <div class="container">
+                    <div class="col-lg-3" style="border-right: 1px solid lightgrey">
+                        <h3>Module Type</h3>
+                        <form>
+                            <label name="stickynote">StickyNote</label>
+                            <input type="radio" name="StickyNote">
+                        </form>
+                    </div>
+                    <div class="col-lg-3">
+                        <h3>Module Configuration</h3>
+                        <table class="config">
+                            <tr>
+                                <td class="td-a" onclick="board.selectTD(this)">
+                                    
+                                </td>
+                                <td class="td-b" onclick="board.selectTD(this)">
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="td-b" onclick="board.selectTD(this)">
+
+                                </td>
+                                <td class="td-a" onclick="board.selectTD(this)">
+
+                                </td>
+                            </tr>
+                        </table>
+                        <button class="btn btn-primary" onclick="board.checkUIConfig()">Add Module</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            var board=new Pinboard('<?=$mod_id?>');
+        </script>
+        <?php
     }
 }

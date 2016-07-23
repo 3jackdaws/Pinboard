@@ -20,19 +20,21 @@ class SlipStream
     }
 
     public function accept(){
-
-        foreach ($_POST as $type=>$mid){
-            //error_log($mid);
-            $this->_contacted[$mid] = $type;
+        $objs = json_decode($_POST['sp']);
+        error_log($_POST['sp']);
+        foreach ($objs as $ob) {
+            foreach ($ob as $type=>$uid) {
+                $this->_contacted[$uid] = $type;
+            }
         }
-
         do{
             foreach($this->_contacted as $mid=>$type){
                 $this->_response[$mid] = $this->_registered[$type]($mid);
+                if($this->_response[$mid]) error_log($mid);
             }
-
+            usleep(100000);
         }while(!$this->shouldPush());
-        usleep(100000);
+
         echo json_encode($this->_response);
     }
 
