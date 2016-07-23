@@ -47,8 +47,8 @@ class Web{
                 <ul class="nav navbar-nav navbar-left">
                     <li>
                         <div class="btn-group navbar-btn">
-                            <button data-toggle="dropdown" class="btn btn-dark dropdown-toggle">Boards</button>
-                            <ul class="dropdown-menu" style="margin-top: 18px;">
+                            <button id="context-button" data-toggle="dropdown" class="btn btn-dark dropdown-toggle">This board <span class="glyphicon glyphicon-triangle-bottom"></span></button>
+                            <ul id="context-menu" class="dropdown-menu" style="margin-top: 18px; padding: 10px;">
                                 <li><button class="btn btn-default" href="#" style="width: 200px; margin: 10px;">Board 1</button></li>
                                 <li><button class="btn btn-default" href="#" style="width: 200px; margin: 10px;">Board 2</button></li>
                                 <li><button class="btn btn-default" href="#" style="width: 200px; margin: 10px;">Board 3</button></li>
@@ -60,7 +60,7 @@ class Web{
                 <ul class="nav navbar-nav navbar-right">
                     <li>
                         <div class="btn-group navbar-btn">
-                            <button class="btn btn-dark dropdown-toggle" href="https://github.com/3jackdaws/Pinboard/issues">Submit a bug</button>
+                            <a class="btn btn-dark dropdown-toggle" href="https://github.com/3jackdaws/Pinboard/issues">Submit a bug</a>
                         </div>
                     </li>
                 </ul>

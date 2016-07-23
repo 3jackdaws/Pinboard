@@ -38,8 +38,10 @@ var StickyNoteModule = function(mid, classname){
 };
 
 StickyNoteModule.prototype.createBaseModuleNode = function(classname){
+    var me = this;
     this.baseModuleNode = document.createElement('div');
     this.baseModuleNode.onclick = this.cancelEdit.bind(this);
+    // this.baseModuleNode.addEventListener('mouseup', me.putDownNote);
     this.baseModuleNode.className = "module sticky-note-module " + classname;
     this.baseModuleNode.setAttribute('guid', this.mid);
     var addNoteButton = document.createElement('a');
@@ -302,6 +304,7 @@ function getGuid() {
 }
 
 function foreach(list, mapfunc){
+    if(!list) return;
     var len = list.length;
     for(var i = 0; i<len; i++){
         mapfunc(list[i]);

@@ -15,15 +15,29 @@ var Pinboard = function (muid) {
     this.modules = [];
     this.moduleObjects = [];
     this.numSections = null;
-    this.moduleConfiguration = null;
+    this.moduleConfiguration = [];
     this.pinboardNode = document.getElementById('board');
     if(muid == "new"){
         this.createNew();
     }else{
         this.getBoardData(muid);
     }
-
+    this.changeContextUI();
 };
+
+Pinboard.prototype.changeContextUI = function () {
+    var me = this;
+    var cbutton = document.getElementById('context-button');
+    var cmenu = document.getElementById('context-menu');
+    cmenu.innerHTML = "";
+    cbutton.innerHTML = "This board <span class='glyphicon glyphicon-triangle-bottom'></span>";
+    var addModuleButton = document.createElement('button');
+    addModuleButton.className = "btn btn-primary";
+    addModuleButton.onclick = function(){me.addModule()};
+    addModuleButton.innerHTML = "Add New Module";
+    var li = document.createElement('li');
+    cmenu.appendChild(li.appendChild(addModuleButton));
+}
 
 Pinboard.prototype.getBoardData = function () {
     var me = this;
@@ -31,7 +45,7 @@ Pinboard.prototype.getBoardData = function () {
         action:"get",
         board:me.muid
     }, function(data){
-        console.log(data);
+        // console.log(data);
         if(data == null) me.createNew();
         else{
             me.populateBoardData(data);
@@ -65,7 +79,7 @@ Pinboard.prototype.save = function () {
     board_data['name'] = this.name;
     board_data['owner'] = this.owner;
     board_data['participants'] = this.participants;
-    console.log("save attempt");
+    // console.log("save attempt");
     $.post("/assets/php/board_access.php", {
         action:"update",
         board: me.muid,
@@ -76,30 +90,31 @@ Pinboard.prototype.save = function () {
 };
 
 Pinboard.prototype.loadModules = function () {
-    console.log("LoadMods");
+    // console.log("LoadMods");
     var me = this;
-    foreach(me.modules, function (mod) {
-        me.getModuleFromDatabase(mod);
-    })
+    var type, id;
+    var len = this.modules.length;
+    for(var i = 0; i<len; i++){
+        // console.log(i);
+        for(var k in me.modules[i]) break;
+        type = k;
+        id = me.modules[i][k];
+        var classname = me.decodeModuleLayout(me.moduleConfiguration[i]);
+        switch(type.toLowerCase()){
+            case "stickynote":
+            {
+                // console.log(classname);
+                var modNode = new StickyNoteModule(id, classname);
+                me.moduleObjects.push(modNode);
+                me.pinboardNode.appendChild(modNode.baseModuleNode);
+                break;
+            }
+        }
+    }
 };
 
 Pinboard.prototype.getModuleFromDatabase = function (mod) {
-    var type, id;
-    for(var k in mod) break;
-    type = k;
-    id = mod[k];
-    var me = this;
-    // console.log(type + " " + id);
-    switch(type.toLowerCase()){
-        case "stickynote":
-        {
-            var modNode = new StickyNoteModule(id, "half-height half-width");
-            me.moduleObjects.push(modNode);
-            // console.log(modNode);
-            me.pinboardNode.appendChild(modNode.baseModuleNode);
-            break;
-        }
-    }
+
 }
 
 Pinboard.prototype.populateBoardData = function (data) {
@@ -109,18 +124,27 @@ Pinboard.prototype.populateBoardData = function (data) {
     this.owner = data.owner;
     this.participants = data.participants;
     this.modules = data.data.modules;
-    this.moduleConfiguration = data.data.layout;
+    if(data.data.config)
+        this.moduleConfiguration = data.data.config;
 };
 
 Pinboard.prototype.addModule = function () {
     var modal = document.getElementsByClassName('add-mod-modal')[0];
-    console.log(modal);
-    modal.style.visibility == 'visible' ? modal.style.visibility = "hidden" : modal.style.visibility = 'visible';
+    var dim = document.getElementById('dim');
+    // console.log(modal);
+    if(modal.style.visibility == 'visible'){
+        modal.style.visibility = "hidden"
+        dim.style.visibility = "hidden";
+    }else{
+        modal.style.visibility = 'visible';
+        dim.style.visibility = "visible";
+    }
 };
 
 Pinboard.prototype.checkUIConfig = function () {
     var array = this.createTableArray();
     var numQuads = 0;
+    var classname = "";
     var len = array.length;
     for (var i = 0; i < len; i++) {
         if(array[i]) numQuads++;
@@ -138,10 +162,17 @@ Pinboard.prototype.checkUIConfig = function () {
             alert("Quadrants must be adjacent.");
             return;
         }
+        if((array[0] && array[1]) || (array[2] && array[3])){
+            classname += " half-height";
+        }
+        else
+            classname += " half-width";
+    }else if(numQuads == 1){
+        classname = "half-height half-width"
     }
 
     alert("Module created");
-    this.createModule("StickyNote", "half-width half-height");
+    this.createModule("StickyNote", classname);
     this.addModule();
 };
 
@@ -160,8 +191,8 @@ Pinboard.prototype.createModule = function (type, classes) {
             this.moduleObjects.push(newMod);
             document.getElementsByClassName('pinboard')[0].appendChild(newMod.baseModuleNode);
             this.modules.push({StickyNote:newMod.mid});
+            this.moduleConfiguration.push(this.encodeModuleLayout(classes));
             this.save();
-
         }
     }
 };
@@ -184,38 +215,25 @@ Pinboard.prototype.createTableArray = function () {
     return config;
 };
 
-Pinboard.createModuleLayout = function (q) {
-    var layout = [];
-    if(q[0] == q[1] == q[2] == q[3]) layout.push("FULL");
-    else if(q[0] == q[3] || q[1] == q[2]) layout.push("TWOCOL");
-    else layout.push("NORMAL");
+Pinboard.prototype.encodeModuleLayout = function (klass) {
 
-    if(layout[0] == "TWOCOL"){
-        if(q[0] == q[3]) layout.push("STD");
-        else {
-            layout.push("HH");
-            layout.push("HH");
-        };
-        if(q[1] == q[2]) layout.push("STD");
-        else {
-            layout.push("HH");
-            layout.push("HH");
-        };
+    var clist = klass.split(" ");
+    var config = "";
+    for (var c in clist){
+        // console.log("C:" + clist[c]);
+        if(clist[c] == "half-height") config += " HH";
+        else if(clist[c] == "half-width") config += " HW";
     }
+    return config;
+};
 
-    if (layout[0] == "NORMAL"){
-        if(q[0] == q[1]) layout.push("HH");
-        else {
-            layout.push("HH HW");
-            layout.push("HH HW");
-        }
-        if(q[2] == q[3]) layout.push("HH");
-        else {
-            layout.push("HH HW");
-            layout.push("HH HW");
-        }
+Pinboard.prototype.decodeModuleLayout = function (code) {
+    // if(!klass) return "";
+    var klass = "";
+    var symbols = code.split(" ");
+    for(var c in symbols){
+        if(symbols[c] == "HW") klass += " half-width";
+        else if(symbols[c] == "HH") klass += " half-height";
     }
-
-    this.moduleConfiguration = layout;
-
+    return klass;
 };

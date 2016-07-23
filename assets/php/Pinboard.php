@@ -74,16 +74,14 @@ class Pinboard
         ?>
 
         <div id="board" class="pinboard">
-            <div class="pinboard-header">
-                <button class="btn btn-primary" onclick="board.addModule()">Add a Module</button>
-            </div>
+            <div id="dim" class="cover" onclick="board.addModule()"></div>
             <div class="col-lg-6 add-mod-modal">
                 <div class="container">
                     <div class="col-lg-3" style="border-right: 1px solid lightgrey">
                         <h3>Module Type</h3>
                         <form>
                             <label name="stickynote">StickyNote</label>
-                            <input type="radio" name="StickyNote">
+                            <input type="radio" name="StickyNote" checked>
                         </form>
                     </div>
                     <div class="col-lg-3">
