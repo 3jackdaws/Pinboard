@@ -43,7 +43,9 @@ var StickyNoteModule = function(mid, classname){
         }
         me.refresh();
     });
+    window.addEventListener('resize', function(){me.sizeText()});
     this.loadModule();
+
 };
 
 StickyNoteModule.prototype.createBaseModuleNode = function(classname){
@@ -254,7 +256,17 @@ StickyNoteModule.prototype.loadModule = function(){
         }
 
         me.refresh();
+        me.sizeText();
     });
+};
+
+StickyNoteModule.prototype.sizeText = function () {
+
+    var height = this.baseModuleNode.getBoundingClientRect().height;
+    console.log(height);
+    var slen = this.namediv.innerHTML.length+1;
+    this.namediv.style.fontSize = height*3.4/slen;
+    this.namediv.style.lineHeight = height + "px";
 };
 
 

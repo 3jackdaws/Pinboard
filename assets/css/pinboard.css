@@ -74,7 +74,8 @@ body{
 
 .mod-label{
     position: absolute;
-    left: 100px;
+    left: 10px;
+    top: 0;
     font-size: 150px;
     background-color: #bbb;
     color: transparent;
@@ -83,10 +84,9 @@ body{
     -moz-background-clip: text;
     background-clip: text;
     font-weight: 200;
-    line-height: 200px;
-    height: 100%;
-    vertical-align: middle;
     cursor: default;
+    width: 100%;
+    text-align: center;
 }
 
 .c-button{
