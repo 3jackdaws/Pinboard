@@ -43,7 +43,7 @@ if($board['data'] == null){
     </div>
     <center>
         <h2>
-            Sorry, that board could be found
+            Sorry, that board couldn't be found
         </h2>
     </center>
     <?php
