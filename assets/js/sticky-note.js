@@ -262,11 +262,10 @@ StickyNoteModule.prototype.loadModule = function(){
 
 StickyNoteModule.prototype.sizeText = function () {
 
-    var height = this.baseModuleNode.getBoundingClientRect().height;
-    console.log(height);
+    var br = this.baseModuleNode.getBoundingClientRect();
     var slen = this.namediv.innerHTML.length+1;
-    this.namediv.style.fontSize = height*3.4/slen;
-    this.namediv.style.lineHeight = height + "px";
+    this.namediv.style.fontSize = br.width*2/slen;
+    this.namediv.style.lineHeight = br.height + "px";
 };
 
 
