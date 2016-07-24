@@ -10,6 +10,12 @@
  * Load board from get variable
  */
 
+function clean($string) {
+    $string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
+
+    return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
+}
+
 set_include_path(realpath($_SERVER['DOCUMENT_ROOT']) . '/assets/php');
 require_once 'Pinboard.php';
 require 'Components.php';
@@ -21,7 +27,7 @@ if($board_uid == null){
 }
 
 if($board_uid == "new"){
-    $board_uid = $value;
+    $board_uid = clean($value);
     $data = [];
     $data['name'] = "New Board";
     $data['owner'] = "None";
