@@ -6,9 +6,10 @@
     Pinboard.js
 
  */
-var mbw = 2;
+var mbw = 0;
 SlipStream.setResource("/ss.php");
 var Pinboard = function (muid) {
+    var me = this;
     this.muid = muid;
     this.participants = null;
     this.owner = null;
@@ -23,6 +24,10 @@ var Pinboard = function (muid) {
         this.getBoardData(muid);
     }
     this.changeContextUI();
+    setTimeout(function(){if(me.modules.length == 0)
+        alert("Right now there aren't any modules here.  Try adding one by clicking the \"This Board\" button in the top left");
+    },2000);
+
 };
 
 Pinboard.prototype.changeContextUI = function () {
@@ -32,11 +37,17 @@ Pinboard.prototype.changeContextUI = function () {
     cmenu.innerHTML = "";
     cbutton.innerHTML = "This board <span class='glyphicon glyphicon-triangle-bottom'></span>";
     var addModuleButton = document.createElement('button');
-    addModuleButton.className = "btn btn-primary";
+    addModuleButton.className = "btn btn-primary c-button";
     addModuleButton.onclick = function(){me.addModule()};
     addModuleButton.innerHTML = "Add New Module";
     var li = document.createElement('li');
     cmenu.appendChild(li.appendChild(addModuleButton));
+    var delBoardButton = document.createElement('button');
+    li = document.createElement('li');
+    delBoardButton.className = "btn btn-danger c-button";
+    delBoardButton.onclick = function(){me.delBoard()};
+    delBoardButton.innerHTML = "Delete this Board";
+    cmenu.appendChild(li.appendChild(delBoardButton));
 }
 
 Pinboard.prototype.getBoardData = function () {
@@ -123,12 +134,15 @@ Pinboard.prototype.populateBoardData = function (data) {
     this.name = data.name;
     this.owner = data.owner;
     this.participants = data.participants;
-    this.modules = data.data.modules;
     if(data.data.config)
         this.moduleConfiguration = data.data.config;
+    if(data.data.modules)
+        this.modules = data.data.modules;
+
 };
 
 Pinboard.prototype.addModule = function () {
+
     var modal = document.getElementsByClassName('add-mod-modal')[0];
     var dim = document.getElementById('dim');
     // console.log(modal);
@@ -170,9 +184,12 @@ Pinboard.prototype.checkUIConfig = function () {
     }else if(numQuads == 1){
         classname = "half-height half-width"
     }
-
-    alert("Module created");
-    this.createModule("StickyNote", classname);
+    var name = document.getElementById('mod-name').value;
+    if(name.length == 0){
+        alert("You must name the new module");
+        return;
+    }
+    this.createModule("StickyNote", classname, name);
     this.addModule();
 };
 
@@ -183,13 +200,19 @@ Pinboard.prototype.selectTD = function (e) {
     e.className += rep;
 };
 
-Pinboard.prototype.createModule = function (type, classes) {
+Pinboard.prototype.createModule = function (type, classes, name) {
+    if(this.modules.length >= 8){
+        alert("Boards are only allowed eight modules.  Try deleting a module before adding another one.");
+        return;
+    }
     switch(type.toLowerCase()){
         case "stickynote":
         {
             var newMod = new StickyNoteModule(getGuid(), classes);
+            newMod.name = name;
+            newMod.save();
             this.moduleObjects.push(newMod);
-            document.getElementsByClassName('pinboard')[0].appendChild(newMod.baseModuleNode);
+            this.pinboardNode.appendChild(newMod.baseModuleNode);
             this.modules.push({StickyNote:newMod.mid});
             this.moduleConfiguration.push(this.encodeModuleLayout(classes));
             this.save();
@@ -236,4 +259,15 @@ Pinboard.prototype.decodeModuleLayout = function (code) {
         else if(symbols[c] == "HH") klass += " half-height";
     }
     return klass;
+};
+
+Pinboard.prototype.delBoard = function () {
+    if(!confirm("Deleting a board is permanent.  Click OK to continue.")) return;
+    var me = this;
+    $.post("/assets/php/board_access.php", {
+        action:"delete",
+        board: me.muid
+    }, function(data){
+        window.location = "/";
+    });
 };

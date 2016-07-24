@@ -40,6 +40,8 @@ switch ($action){
     }
     case "delete":
     {
+        $response['deleted'] = Pinboard::delete($guid);
+        echo json_encode($response);
         break;
     }
     default:

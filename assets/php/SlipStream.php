@@ -8,9 +8,9 @@
  */
 class SlipStream
 {
-    private $_registered;
-    private $_contacted;
-    private $_response;
+    private $_registered = [];
+    private $_contacted = [];
+    private $_response = [];
     public function __construct()
     {
     }
@@ -21,7 +21,6 @@ class SlipStream
 
     public function accept(){
         $objs = json_decode($_POST['sp']);
-        error_log($_POST['sp']);
         foreach ($objs as $ob) {
             foreach ($ob as $type=>$uid) {
                 $this->_contacted[$uid] = $type;
@@ -29,12 +28,11 @@ class SlipStream
         }
         do{
             foreach($this->_contacted as $mid=>$type){
+
                 $this->_response[$mid] = $this->_registered[$type]($mid);
-                if($this->_response[$mid]) error_log($mid);
             }
             usleep(100000);
         }while(!$this->shouldPush());
-
         echo json_encode($this->_response);
     }
 
@@ -44,3 +42,5 @@ class SlipStream
         }
     }
 }
+//        $file = fopen("ss.txt", "a");
+//        fwrite($file, var_dump($this->_contacted));

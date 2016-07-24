@@ -41,18 +41,15 @@ class Web{
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#"><span class="glyphicon glyphicon-blackboard" style="font-size: 24px"> </span> PINBOARD</a>
+                <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-blackboard" style="font-size: 24px"> </span> PINBOARD</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-left">
                     <li>
                         <div class="btn-group navbar-btn">
-                            <button id="context-button" data-toggle="dropdown" class="btn btn-dark dropdown-toggle">This board <span class="glyphicon glyphicon-triangle-bottom"></span></button>
-                            <ul id="context-menu" class="dropdown-menu" style="margin-top: 18px; padding: 10px;">
-                                <li><button class="btn btn-default" href="#" style="width: 200px; margin: 10px;">Board 1</button></li>
-                                <li><button class="btn btn-default" href="#" style="width: 200px; margin: 10px;">Board 2</button></li>
-                                <li><button class="btn btn-default" href="#" style="width: 200px; margin: 10px;">Board 3</button></li>
-
+                            <button id="context-button" data-toggle="dropdown" class="btn btn-dark dropdown-toggle">Find a board <span class="glyphicon glyphicon-search"></span></button>
+                            <ul id="context-menu" class="dropdown-menu" style="margin-top: 18px; padding: 15px; padding-bottom: 0;">
+                                
                             </ul>
                         </div>
                     </li>

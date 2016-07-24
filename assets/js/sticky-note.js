@@ -5,9 +5,12 @@
 document.addEventListener("mouseup", putDownAll);
 
 function putDownAll(event){
-    foreach(board.moduleObjects, function (e) {
-        e.putDownNote();
-    });
+    if(typeof board !== 'undefined'){
+        foreach(board.moduleObjects, function (e) {
+            e.putDownNote();
+        });
+    }
+
 }
 
 
@@ -15,6 +18,8 @@ function putDownAll(event){
 var StickyNoteModule = function(mid, classname){
     var me = this;
     this.mid = mid;
+    this.name = null;
+    this.namediv = null;
     this.createBaseModuleNode(classname);
     this.currentZIndex = null;
     this.editedNote = null;
@@ -30,8 +35,12 @@ var StickyNoteModule = function(mid, classname){
     this.saveInterval = null;
     this.noteCache = null;
     SlipStream.register({StickyNote:mid}, function (data) {
-        if(!data) return;
-        me.noteCache = data.data;
+        var sdata = data;
+        if(sdata && sdata.data){
+            if(sdata.data.notes)
+                me.noteCache = sdata.data.notes;
+            me.name = sdata.data.name;
+        }
         me.refresh();
     });
     this.loadModule();
@@ -53,11 +62,15 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
     addNoteButton.style.bottom = 10;
     addNoteButton.style.zIndex = 999999999;
     this.baseModuleNode.appendChild(addNoteButton);
+    this.namediv = document.createElement('div');
+    this.namediv.className = "mod-label";
+    this.baseModuleNode.appendChild(this.namediv);
 };
 
 StickyNoteModule.prototype.refresh = function () {
     if(this.heldNote || this.editedNote) return;
-        this.changeNotes();
+    this.changeNotes();
+    this.namediv.innerHTML = this.name;
 };
 
 StickyNoteModule.prototype.createNewStickyNote = function (text, x, y, z, guid) {
@@ -204,13 +217,15 @@ StickyNoteModule.prototype.save = function () {
         note["z"] = card.style.zIndex;
         noteStack.push(note);
     });
-    // var json = JSON.stringify(noteStack);
+    var data = {};
+    data.name = this.name;
+    data.notes = noteStack;
 
     $.post("/mod_access.php", {
         action:"update",
         class: "StickyNote",
         module:me.mid,
-        data:noteStack
+        data:data
     }, function(data){
         console.log(data);
     });
@@ -230,8 +245,14 @@ StickyNoteModule.prototype.loadModule = function(){
         class:'StickyNote',
         module:me.mid
     }, function(data){
+        // console.log(data);
+        var sdata = JSON.parse(data);
+        if(sdata && sdata.data){
+            if(sdata.data.notes)
+                me.noteCache = sdata.data.notes;
+            me.name = sdata.data.name;
+        }
 
-        me.noteCache = JSON.parse(data).data;
         me.refresh();
     });
 };

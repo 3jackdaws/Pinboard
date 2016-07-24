@@ -22,7 +22,9 @@ class Module
         $statement = Database::connect()->prepare($sql);
         $statement->bindParam(':guid', $guid);
         $statement->execute();
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC)[0];
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        if($result) $result = $result[0];
+        else return null;
         $result['data'] = json_decode($result['data']);
         return $result;
     }

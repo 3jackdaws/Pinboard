@@ -13,8 +13,8 @@ class StickyNote extends Module
 {
     public function processIncomingModule($module_data)
     {
-        $data = $this->normalizeZIndex($module_data);
-        return $data;
+        $module_data['notes'] = $this->normalizeZIndex($module_data['notes']);
+        return $module_data;
     }
 
     private function normalizeZIndex($data){

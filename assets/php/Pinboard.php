@@ -22,7 +22,9 @@ class Pinboard
         $statement = Database::connect()->prepare($sql);
         $statement->bindParam(':guid', $guid);
         $statement->execute();
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC)[0];
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        if($result) $result = $result[0];
+        else return null;
         $result['data'] = json_decode($result['data']);
         return $result;
     }
@@ -45,6 +47,22 @@ class Pinboard
     }
 
     public static function delete($guid){
+        $board = self::get($guid);
+        $file = fopen("vdump_bdel.txt", "w");
+        ob_start();
+        var_dump($board['data']->modules);
+
+        $sql = "DELETE FROM modules WHERE guid=:guid;";
+        $statement = Database::connect()->prepare($sql);
+
+        foreach ($board['data']->modules as $mod){
+
+            foreach ($mod as $type=>$uid) {
+                $statement->bindParam(':guid', $uid);
+                $statement->execute();
+            }
+        }
+        fwrite($file, ob_get_clean());
         $sql = "DELETE FROM boards WHERE guid=:guid;";
         $statement = Database::connect()->prepare($sql);
         $statement->bindParam(':guid', $guid);
@@ -63,28 +81,23 @@ class Pinboard
         return $module;
     }
 
-    private function writeModules($guid){
-        foreach($this->_module_data['data']['modules'] as $mod){
-            $module = Module::get($mod);
-            
-        }
-    }
 
     public static function writeBase($mod_id){
         ?>
 
         <div id="board" class="pinboard">
             <div id="dim" class="cover" onclick="board.addModule()"></div>
-            <div class="col-lg-6 add-mod-modal">
-                <div class="container">
-                    <div class="col-lg-3" style="border-right: 1px solid lightgrey">
+<!-- Start Modal Definition -->
+            <div class="add-mod-modal">
+                <div class="row">
+                    <div class="col-lg-6" style="position: relative">
                         <h3>Module Type</h3>
                         <form>
                             <label name="stickynote">StickyNote</label>
                             <input type="radio" name="StickyNote" checked>
                         </form>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-6" style="position: relative">
                         <h3>Module Configuration</h3>
                         <table class="config">
                             <tr>
@@ -106,8 +119,18 @@ class Pinboard
                         </table>
                         <button class="btn btn-primary" onclick="board.checkUIConfig()">Add Module</button>
                     </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h3>Module Name</h3>
+                            <input id="mod-name" class="form-control" placeholder="Module Name" style="max-width: 600px; margin: 0 auto;"/>
+                        </div>
+
+                    </div>
+
+
                 </div>
             </div>
+<!--    END MODAL        -->
         </div>
         <script>
             var board=new Pinboard('<?=$mod_id?>');

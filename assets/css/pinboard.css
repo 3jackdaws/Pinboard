@@ -19,7 +19,8 @@ html{
 
 body{
     margin-top: 50px;
-    padding: 3px;
+    /*padding: 3px;*/
+    background-color: #f5f5f5;
     overflow-x: hidden;
 }
 
@@ -35,14 +36,17 @@ body{
 }
 
 .module{
-    width: 100%;
-    height: 100%;
-    border: 2px solid white;
+    width: 99.6%;
+    height: 99.6%;
+    /*border: 2px solid lightgrey;*/
+    box-shadow: 1px 1px 5px rgba(0,0,0,.5);
+    margin: .2%;
+    float: left;
 }
 
 .sticky-note-module{
-    box-shadow: inset 5px 5px 20px rgba(0,0,0,.5);
-    background: transparent;
+    /*box-shadow: inset 5px 5px 20px rgba(0,0,0,.5);*/
+    background: #fefefe;
     height: 100%;
     overflow: hidden;
     position: relative;
@@ -66,6 +70,29 @@ body{
     border: 1px solid #ddcc66;
     -webkit-appearance: none;
     color: #111;
+}
+
+.mod-label{
+    position: absolute;
+    left: 100px;
+    font-size: 150px;
+    background-color: #bbb;
+    color: transparent;
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    background-clip: text;
+    font-weight: 200;
+    line-height: 200px;
+    height: 100%;
+    vertical-align: middle;
+    cursor: default;
+}
+
+.c-button{
+    margin: 0 auto;
+    margin-bottom: 15px;
+
 }
 
 .sticky-note id{
@@ -94,11 +121,11 @@ body{
 }
 
 .half-width{
-    width: 50%;
-    float: left;
+    width: 49.6%;
+
 }
 .half-height{
-    height: 50%;
+    height: 49.6%;
 }
 
 textarea:focus::-webkit-input-placeholder{
@@ -109,13 +136,13 @@ textarea:focus::-webkit-input-placeholder{
     position: fixed;
     left: 0;
     right: 0;
+    max-width: 700px;
     margin-top: 10%;
     margin-left: auto;
     margin-right: auto;
     border: 1px solid lightgrey;
     border-radius: 6px;
     visibility: hidden;
-    z-index: 10000;
     box-shadow: 2px 2px 5px rgba(0,0,0,.5);
     background-color: #f1f1f1;
     text-align: center;
@@ -161,5 +188,23 @@ table.config td.td-selected{
     z-index: 1999999999;
 }
 
+.circle-lg{
+    border-radius: 50%;
+    border: 2px solid #333;
+    margin: 0 auto;
+    margin-top: 7%;
+    width: 200px;
+    height: 200px;
+    line-height: 200px;
+    font-size: 60px;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #222;
+    color: white;
+}
+
+.form-control{
+    margin: 3px;
+}
 
 
