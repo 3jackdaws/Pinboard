@@ -6,6 +6,50 @@
     Pinboard.js
 
  */
+Window.prototype.alert = function(message){
+    console.log("Alert");
+    var alert = document.createElement('div');
+    var shade = document.createElement('div');
+    var ok = document.createElement('div');
+    alert.style.position = 'fixed';
+    alert.style.margin = "auto";
+    alert.style.background = "#f5f5f5";
+    alert.style.width = '500px';
+    alert.style.border = '1px solid lightgrey';
+    alert.style.borderRadius = "6px";
+    alert.style.top = '40%';
+    alert.style.left = 0;
+    alert.style.right = 0;
+    alert.style.padding = '30px';
+    alert.style.paddingBottom = '0';
+    alert.innerHTML = message;
+    alert.zIndex = 214748366;
+    shade.style.position = 'fixed';
+    shade.style.height = '100%';
+    shade.style.width = '100%';
+    shade.style.background = 'rgba(0,0,0,.7)';
+    shade.zIndex = 214748350;
+    shade.onclick = function(){
+        document.body.removeChild(shade);
+        document.body.removeChild(alert);
+    };
+
+    ok.style.width = '100%';
+    ok.style.padding = '10px 0 10px 0px ';
+    ok.style.marginTop = '15px';
+    ok.style.borderTop = '1px solid #ddd';
+    ok.innerHTML = "OK";
+    ok.onclick = function(){
+        document.body.removeChild(shade);
+        document.body.removeChild(alert);
+    };
+    ok.style.cursor = "pointer";
+    ok.style.textAlign = 'center';
+    alert.appendChild(ok);
+    document.body.appendChild(shade);
+    document.body.appendChild(alert);
+};
+
 var mbw = 0;
 SlipStream.setResource("/ss.php");
 var Pinboard = function (muid) {
@@ -271,3 +315,4 @@ Pinboard.prototype.delBoard = function () {
         window.location = "/";
     });
 };
+

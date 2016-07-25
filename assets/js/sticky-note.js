@@ -10,7 +10,6 @@ function putDownAll(event){
             e.putDownNote();
         });
     }
-
 }
 
 
@@ -34,6 +33,7 @@ var StickyNoteModule = function(mid, classname){
     this.notes = {};
     this.saveInterval = null;
     this.noteCache = null;
+    //register this stickynote module with the SlipStream client
     SlipStream.register({StickyNote:mid}, function (data) {
         var sdata = data;
         if(sdata && sdata.data){
@@ -56,7 +56,7 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
     this.baseModuleNode.className = "module sticky-note-module " + classname;
     this.baseModuleNode.setAttribute('guid', this.mid);
     var addNoteButton = document.createElement('a');
-    addNoteButton.onclick = this.addBlankStickyNote.bind(this);
+    addNoteButton.onclick = me.addBlankStickyNote;  //bind the addBlankNote function to the addNoteButton
     addNoteButton.innerHTML = '<span class="glyphicon glyphicon-plus-sign"></span>';
     addNoteButton.className = "add-note-button";
     addNoteButton.style.position = 'absolute';
@@ -70,7 +70,7 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
 };
 
 StickyNoteModule.prototype.refresh = function () {
-    if(this.heldNote || this.editedNote) return;
+    if(this.heldNote || this.editedNote) return;        //if a note is held or edited, exit
     this.changeNotes();
     this.namediv.innerHTML = this.name;
 };
@@ -79,12 +79,12 @@ StickyNoteModule.prototype.createNewStickyNote = function (text, x, y, z, guid) 
     if(this.numNotes >= this.maxNotes) return;
     if(guid == null) guid = getGuid();
     this.numNotes++;
-    var note = document.createElement("textarea");
+    var note = document.createElement("textarea");      //create a textarea node
     note.className = "sticky-note noselect";
     note.setAttribute("guid", guid);
     note.readOnly = true;
     note.onmousedown = this.pickupNote.bind(this);
-    note.addEventListener("dblclick", this.editNote.bind(this));
+    note.addEventListener("dblclick", this.editNote.bind(this));        //add a double click event listener
     note.addEventListener('mouseup', note.focus);
     note.innerHTML = text;
     this.currentZIndex++;
@@ -93,7 +93,7 @@ StickyNoteModule.prototype.createNewStickyNote = function (text, x, y, z, guid) 
     note.style.left = x;
     note.style.top = y;
     note.style.zIndex = z;
-    this.baseModuleNode.appendChild(note);
+    this.baseModuleNode.appendChild(note);      //insert the textarea node into the node that describes the base module
     this.notes[guid] = note;
     return note;
 };
@@ -148,9 +148,10 @@ StickyNoteModule.prototype.cancelEdit = function (event) {
 
 StickyNoteModule.prototype.delegateSave = function () {
     var boundSave = this.save.bind(this);
+    //clear the save timer if it exists
     clearInterval(this.saveInterval);
     var me = this;
-    this.saveInterval = window.setTimeout(boundSave, 500);
+    this.saveInterval = window.setTimeout(boundSave, 500);  //set timer to save in 500 milliseconds
 };
 
 StickyNoteModule.prototype.cancelSave = function () {
@@ -166,11 +167,11 @@ StickyNoteModule.prototype.pickupNote = function (event) {
     this.heldNote.style.zIndex = this.currentZIndex;
     var noteBoundaries = this.heldNote.getBoundingClientRect();
     var containerBoundaries = this.baseModuleNode.getBoundingClientRect();
-    var offsetX = noteBoundaries.left - this.mouseTracker.x - containerBoundaries.left - mbw;
+    var offsetX = noteBoundaries.left - this.mouseTracker.x - containerBoundaries.left - mbw;   //calculate an offset so things aren't broke
     var offsetY = noteBoundaries.top - this.mouseTracker.y - containerBoundaries.top - mbw;
 
     clearInterval(me.mti);
-    me.mti = window.setInterval(function(){
+    me.mti = window.setInterval(function(){     //set an Interval and put the id in this.mti
         me.heldNote.style.left = (me.mouseTracker.x + offsetX);
         me.heldNote.style.top = (me.mouseTracker.y + offsetY);
     }, 15);
@@ -180,24 +181,13 @@ StickyNoteModule.prototype.putDownNote = function () {
     if(this.heldNote){
         var debugrect = this.heldNote.getBoundingClientRect();
         var debugmod = this.heldNote.parentNode.getBoundingClientRect();
+        //clear the mouse tracking interval (mti)
         clearInterval(this.mti);
         this.heldNote = null;
         this.save();
 
     }
 };
-
-StickyNoteModule.prototype.normalize = function () {
-    var lowest = 9999999;
-    this.forEachNote(function (note) {
-        if(note.style.zIndex < lowest) lowest = note.style.zIndex;
-    });
-    lowest-=2;
-    console.log(lowest);
-    this.forEachNote(function (note) {
-        note.style.zIndex -= lowest;
-    });
-}
 
 StickyNoteModule.prototype.save = function () {
     var noteStack = [];
@@ -206,9 +196,9 @@ StickyNoteModule.prototype.save = function () {
     me.forEachNote(function (card) {
         var id = card.getAttribute("guid");
         var position = card.getBoundingClientRect();
-        var parentPosition = me.baseModuleNode.getBoundingClientRect();
-        var note = {};
-        note["guid"] = id;
+        var parentPosition = me.baseModuleNode.getBoundingClientRect();     //find the rectangle coordinates of the parent node
+        var note = {};      //create an empty object
+        note["guid"] = id;  //create a dictionary
         note["top"] = position.top - parentPosition.top - mbw;
         note["left"] = position.left - parentPosition.left - mbw;
         if(position.top + 30 < parentPosition.top) note['top'] = -30;
@@ -223,6 +213,7 @@ StickyNoteModule.prototype.save = function () {
     data.name = this.name;
     data.notes = noteStack;
 
+    //update this module's data on the server
     $.post("/mod_access.php", {
         action:"update",
         class: "StickyNote",
@@ -241,15 +232,17 @@ StickyNoteModule.prototype.logMouse = function (event) {
 StickyNoteModule.prototype.loadModule = function(){
 
     this.baseModuleNode.addEventListener("mousemove", this.logMouse.bind(this));
+    this.baseModuleNode.addEventListener("touchmove", this.logMouse.bind(this));
     var me = this;
+    //get the module described by me.mid from the database
     $.post("/mod_access.php", {
         action:"get",
         class:'StickyNote',
         module:me.mid
     }, function(data){
         // console.log(data);
-        var sdata = JSON.parse(data);
-        if(sdata && sdata.data){
+        var sdata = JSON.parse(data);       //parse the raw string into an object
+        if(sdata && sdata.data){            //if an object was made AND the object has a member called data
             if(sdata.data.notes)
                 me.noteCache = sdata.data.notes;
             me.name = sdata.data.name;
@@ -274,7 +267,7 @@ StickyNoteModule.prototype.changeNotes = function () {
     var me = this;
     var notes = this.noteCache;
     var newNotes = [];
-    foreach(notes, function(note){
+    foreach(notes, function(note){  //foreach note in the note cache, apply the changest to the old notes
         me.currentZIndex < note.z ? me.currentZIndex=note.z : null;
         var id = note.guid;
         newNotes[id] = true;
@@ -295,8 +288,6 @@ StickyNoteModule.prototype.changeNotes = function () {
                         me.notes[id].style.transform = 'none';
                         me.notes[id].style.left = x;
                         me.notes[id].style.top = y;
-
-
                     }, 500);
                 }
             }
