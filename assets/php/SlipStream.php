@@ -31,7 +31,7 @@ class SlipStream
 
                 $this->_response[$mid] = $this->_registered[$type]($mid);
             }
-            usleep(100000);
+            usleep(300000);
         }while(!$this->shouldPush());
         echo json_encode($this->_response);
     }

@@ -7,7 +7,8 @@
 
  */
 window.alert = function(message, callback){
-    Window.prototype.alertObject = document.createElement('div');
+    if(window.alertObject) return;
+    this.alertObject = document.createElement('div');
     if(!callback) callback = function () {};
     var shade = document.createElement('div');
     var ok = document.createElement('div');
@@ -23,15 +24,16 @@ window.alert = function(message, callback){
     this.alertObject.style.padding = '30px';
     this.alertObject.style.paddingBottom = '0';
     this.alertObject.innerHTML = message;
-    this.alertObject.style.zIndex = 214748366;
+    this.alertObject.style.zIndex = 3333333333;
     shade.style.position = 'fixed';
     shade.style.height = '100%';
     shade.style.width = '100%';
     shade.style.background = 'rgba(0,0,0,.7)';
-    shade.style.zIndex = 2100000;
+    shade.style.zIndex = 222222222;
     shade.onclick = function(){
         document.body.removeChild(shade);
         document.body.removeChild(window.alertObject);
+        window.alertObject = null;
     };
 
     ok.style.width = '100%';
@@ -44,7 +46,7 @@ window.alert = function(message, callback){
         callback();
         document.body.removeChild(shade);
         document.body.removeChild(window.alertObject);
-
+        window.alertObject = null;
     };
     ok.style.cursor = "pointer";
     ok.style.textAlign = 'center';

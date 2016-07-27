@@ -28,13 +28,19 @@ if($board_uid == null){
 
 if($board_uid == "new"){
     $board_uid = clean($value);
-    $data = [];
-    $data['name'] = "New Board";
-    $data['owner'] = "None";
-    $data['participants'] = "All";
-    $data['data'] = null;
-    Pinboard::update($board_uid, $data);
-    header("Location: /boards/?".$board_uid);
+    $b = Pinboard::get($board_uid);
+    if($b['data'] == null){
+        $data = [];
+        $data['name'] = "New Board";
+        $data['owner'] = "None";
+        $data['participants'] = "All";
+        $data['data'] = null;
+        Pinboard::update($board_uid, $data);
+        header("Location: /boards/?".$board_uid);
+    }else{
+        $special = "alert('That board already exists!');";
+    }
+
 }
 $board = Pinboard::get($board_uid);
 
@@ -60,5 +66,6 @@ if($board['data'] == null){
     echo web::nav();
     Pinboard::writeBase($board_uid);
 }
+echo "<script>". $special ."</script>"
 ?>
 </body>

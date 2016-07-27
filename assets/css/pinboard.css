@@ -1,7 +1,7 @@
 .navbar{
     padding-left: 10px;
     padding-right: 20px;
-    z-index: 2147483000;
+    z-index: 200000000;
 }
 .navbar-brand {
     transform: translateX(-50%);
@@ -77,7 +77,7 @@ body{
     cursor: text;
     border: 1px solid #ddcc66;
     -webkit-appearance: none;
-    color: #111;
+    color: #333;
 }
 
 .mod-label{
@@ -211,25 +211,26 @@ table.config td.td-selected{
     margin: 3px;
 }
 
+
 .context-menu{
     padding-bottom: 5px;
     padding-top: 5px;
-    min-width: 0px;
-    background: #f5f5f5;
-    box-shadow: 1px 1px 4px rgba(0,0,0,.5);
-    -webkit-border-radius:;
-    -moz-border-radius:;
+    box-shadow: 1px 1px 13px rgba(0,0,0,.1);
+    background-color: rgba(245,245,245, .95);
     border-radius: 4px;
+    border: .6px solid #bbb;
     position: absolute;
     z-index: 2000000;
 }
+
 .context-menu a{
     display: block;
     margin: 0;
     padding: 3px 15px 3px 15px;
     width: 100%;
     text-decoration: none;
-    color: #1E90FF;
+    /*color: #1E90FF;*/
+    color: #555;
     cursor: pointer;
 }
 .context-menu a:hover{
@@ -238,7 +239,7 @@ table.config td.td-selected{
 }
 
 .context-menu a.warning{
-    color: #FC3d39;
+    /*color: #FC3d39;*/
 }
 
 .context-menu a.warning:hover{
@@ -247,7 +248,8 @@ table.config td.td-selected{
 }
 
 .context-menu hr{
-    margin: 5px;
+    margin: 5px 0 5px 0;
+    border-color: lightgrey;
 }
 
 
