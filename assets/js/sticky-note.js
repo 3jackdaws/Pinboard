@@ -62,7 +62,7 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
     var me = this;
     this.baseModuleNode = document.createElement('div');
     this.baseModuleNode.addEventListener("mouseup", function(){me.putDownNote()});
-
+    this.baseModuleNode.addEventListener("mouseout", function(){me.putDownNote()});
     this.baseModuleNode.onclick = function(event){
         me.cancelEdit(event);
     };
