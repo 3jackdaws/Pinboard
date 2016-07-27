@@ -21,6 +21,7 @@ window.addEventListener("load", function () {
     console.log(zRatio);
 });
 
+var copynote = null;
 
 
 var StickyNoteModule = function(mid, classname){
@@ -113,7 +114,16 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
             };
             addnote.innerHTML = "Add Note";
             var hr = document.createElement('hr');
-            return [addnote, rename, hr, del];
+            var paste = document.createElement('a');
+            paste.onclick = function(){
+                var containerBoundaries = me.baseModuleNode.getBoundingClientRect();
+                var offsetX = me.mouseTracker.x/zRatio - containerBoundaries.left - mbw;   //calculate an offset so things aren't broke
+                var offsetY = me.mouseTracker.y/zRatio - containerBoundaries.top - mbw;
+                me.createNewStickyNote(copynote.value, offsetX,offsetY, me.currentZIndex);
+                me.save();
+            };
+            paste.innerHTML = "Paste Note";
+            return [addnote, rename, paste, hr, del];
         });
         return false;
     };
@@ -161,13 +171,22 @@ StickyNoteModule.prototype.createNewStickyNote = function (text, x, y, z, guid) 
                 me.save();
             };
             del.innerHTML = "Delete";
+            del.className = "warning";
             var center = document.createElement('a');
             center.onclick = function(){
                 centerText(t);
                 me.save();
             };
             center.innerHTML = "Toggle Align";
-            return [del, center];
+
+            var copy = document.createElement('a');
+            copy.onclick = function(){
+                copynote = t;
+            };
+            copy.innerHTML = "Copy";
+            var hr = document.createElement('hr');
+
+            return [copy, center, hr, del];
         });
         event.stopPropagation();
         return false;
@@ -402,13 +421,13 @@ StickyNoteModule.prototype.changeNotes = function () {
         }
     });
 
-    for(var note in me.notes){
-        if(note in newNotes){
-
-        }else{
-            me.baseModuleNode.removeChild(me.notes[note]);
-        }
-    }
+    // for(var note in me.notes){
+    //     if(note in newNotes){
+    //
+    //     }else{
+    //         me.baseModuleNode.removeChild(me.notes[note]);
+    //     }
+    // }
 };
 
 StickyNoteModule.prototype.forEachNote = function (func) {
