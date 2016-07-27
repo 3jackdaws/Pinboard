@@ -6,7 +6,7 @@
     Pinboard.js
 
  */
-Window.prototype.alert = function(message, callback){
+window.alert = function(message, callback){
     Window.prototype.alertObject = document.createElement('div');
     if(!callback) callback = function () {};
     var shade = document.createElement('div');
@@ -38,6 +38,7 @@ Window.prototype.alert = function(message, callback){
     ok.style.padding = '10px 0 10px 0px ';
     ok.style.marginTop = '15px';
     ok.style.borderTop = '1px solid #ddd';
+    ok.style.color = '#1E90FF';
     ok.innerHTML = "OK";
     ok.onclick = function(){
         callback();

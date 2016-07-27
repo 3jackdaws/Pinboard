@@ -72,7 +72,7 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
         cMenu(event, function(t){
             var del = document.createElement('a');
             del.onclick = function(){
-                alert("Are you sure you want to remove this module?", function () {
+                window.alert("Are you sure you want to remove this module?", function () {
                     if(board.deleteModule(me.mid)){
                         $.post("/mod_access.php", {
                             action:"delete",
