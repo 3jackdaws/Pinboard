@@ -110,7 +110,11 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
 
             var addnote = document.createElement('a');
             addnote.onclick = function () {
-                me.addBlankStickyNote();
+                var containerBoundaries = me.baseModuleNode.getBoundingClientRect();
+                var offsetX = me.mouseTracker.x/zRatio - containerBoundaries.left - mbw;   //calculate an offset so things aren't broke
+                var offsetY = me.mouseTracker.y/zRatio - containerBoundaries.top - mbw - 50;
+                me.createNewStickyNote("", offsetX,offsetY, me.currentZIndex);
+                me.save();
             };
             addnote.innerHTML = "Add Note";
             var hr = document.createElement('hr');
@@ -118,7 +122,7 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
             paste.onclick = function(){
                 var containerBoundaries = me.baseModuleNode.getBoundingClientRect();
                 var offsetX = me.mouseTracker.x/zRatio - containerBoundaries.left - mbw;   //calculate an offset so things aren't broke
-                var offsetY = me.mouseTracker.y/zRatio - containerBoundaries.top - mbw;
+                var offsetY = me.mouseTracker.y/zRatio - containerBoundaries.top - mbw - 50;
                 me.createNewStickyNote(copynote.value, offsetX,offsetY, me.currentZIndex);
                 me.save();
             };
