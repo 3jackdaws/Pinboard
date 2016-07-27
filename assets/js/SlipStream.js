@@ -29,7 +29,9 @@ var SlipStream = {
                 // console.log(self.xhr.responseText);
                 var response = JSON.parse(self.xhr.responseText);
                 for (var i = self.onserverpush.length -1; i>=0; i--){
-                    self.onserverpush[i](response[self.getFirstKey(self.requestdata[i])]);
+                    var data = response[self.getFirstKey(self.requestdata[i])];
+                    if(data)
+                        self.onserverpush[i](data);
                 }
                 self.open();
             }

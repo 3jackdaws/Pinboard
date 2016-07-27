@@ -68,6 +68,7 @@ switch ($action){
     }
     case "delete":
     {
+        $mod_instance->delete($module_guid);
         break;
     }
     default:

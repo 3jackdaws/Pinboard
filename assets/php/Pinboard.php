@@ -48,7 +48,7 @@ class Pinboard
 
     public static function delete($guid){
         $board = self::get($guid);
-        $file = fopen("vdump_bdel.txt", "w");
+        
         ob_start();
         var_dump($board['data']->modules);
 
@@ -62,7 +62,7 @@ class Pinboard
                 $statement->execute();
             }
         }
-        fwrite($file, ob_get_clean());
+
         $sql = "DELETE FROM boards WHERE guid=:guid;";
         $statement = Database::connect()->prepare($sql);
         $statement->bindParam(':guid', $guid);

@@ -6,32 +6,32 @@
     Pinboard.js
 
  */
-Window.prototype.alert = function(message){
-    console.log("Alert");
-    var alert = document.createElement('div');
+Window.prototype.alert = function(message, callback){
+    Window.prototype.alertObject = document.createElement('div');
+    if(!callback) callback = function () {};
     var shade = document.createElement('div');
     var ok = document.createElement('div');
-    alert.style.position = 'fixed';
-    alert.style.margin = "auto";
-    alert.style.background = "#f5f5f5";
-    alert.style.width = '500px';
-    alert.style.border = '1px solid lightgrey';
-    alert.style.borderRadius = "6px";
-    alert.style.top = '40%';
-    alert.style.left = 0;
-    alert.style.right = 0;
-    alert.style.padding = '30px';
-    alert.style.paddingBottom = '0';
-    alert.innerHTML = message;
-    alert.zIndex = 214748366;
+    this.alertObject.style.position = 'fixed';
+    this.alertObject.style.margin = "auto";
+    this.alertObject.style.background = "#f5f5f5";
+    this.alertObject.style.width = '500px';
+    this.alertObject.style.border = '1px solid lightgrey';
+    this.alertObject.style.borderRadius = "6px";
+    this.alertObject.style.top = '40%';
+    this.alertObject.style.left = 0;
+    this.alertObject.style.right = 0;
+    this.alertObject.style.padding = '30px';
+    this.alertObject.style.paddingBottom = '0';
+    this.alertObject.innerHTML = message;
+    this.alertObject.style.zIndex = 214748366;
     shade.style.position = 'fixed';
     shade.style.height = '100%';
     shade.style.width = '100%';
     shade.style.background = 'rgba(0,0,0,.7)';
-    shade.zIndex = 214748350;
+    shade.style.zIndex = 2100000;
     shade.onclick = function(){
         document.body.removeChild(shade);
-        document.body.removeChild(alert);
+        document.body.removeChild(window.alertObject);
     };
 
     ok.style.width = '100%';
@@ -40,14 +40,17 @@ Window.prototype.alert = function(message){
     ok.style.borderTop = '1px solid #ddd';
     ok.innerHTML = "OK";
     ok.onclick = function(){
+        callback();
         document.body.removeChild(shade);
-        document.body.removeChild(alert);
+        document.body.removeChild(window.alertObject);
+
     };
     ok.style.cursor = "pointer";
     ok.style.textAlign = 'center';
-    alert.appendChild(ok);
+    this.alertObject.appendChild(ok);
+    document.body.appendChild(this.alertObject);
     document.body.appendChild(shade);
-    document.body.appendChild(alert);
+
 };
 
 var mbw = 0;
@@ -69,7 +72,9 @@ var Pinboard = function (muid) {
     }
     this.changeContextUI();
     setTimeout(function(){if(me.modules.length == 0)
-        alert("Right now there aren't any modules here.  Try adding one by clicking the \"This Board\" button in the top left");
+        alert("Right now there aren't any modules here.  Try adding one!", function () {
+            me.addModule();
+        });
     },2000);
 
 };
@@ -306,13 +311,31 @@ Pinboard.prototype.decodeModuleLayout = function (code) {
 };
 
 Pinboard.prototype.delBoard = function () {
-    if(!confirm("Deleting a board is permanent.  Click OK to continue.")) return;
     var me = this;
-    $.post("/assets/php/board_access.php", {
-        action:"delete",
-        board: me.muid
-    }, function(data){
-        window.location = "/";
+    alert("Deleting a board is permanent.  Click OK to continue.", function () {
+        $.post("/assets/php/board_access.php", {
+            action:"delete",
+            board: me.muid
+        }, function(data){
+            window.location = "/";
+        });
     });
+};
+
+Pinboard.prototype.deleteModule = function (guid) {
+    console.log(guid);
+    var len = this.modules.length;
+    for(var i = 0; i<len; i++){
+        for(var f in this.modules[i]) break;
+        if(this.modules[i][f] == guid){
+            this.modules.splice(i,1);
+            this.moduleConfiguration.splice(i,1);
+            this.pinboardNode.removeChild(this.moduleObjects[i].baseModuleNode);
+            console.info("Deleted module guid: " + guid);
+            this.save();
+            return true;
+        }
+    }
+    return false;
 };
 

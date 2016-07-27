@@ -2,15 +2,24 @@
  * Created by ian on 7/13/16.
  */
 
-document.addEventListener("mouseup", putDownAll);
+
 
 function putDownAll(event){
     if(typeof board !== 'undefined'){
+        console.log(event.target);
         foreach(board.moduleObjects, function (e) {
-            e.putDownNote();
+            console.log(e.baseModuleNode);
+            if(e.baseModuleNode == event.target)
+                e.putDownNote();
         });
     }
 }
+var zRatio;
+window.addEventListener("load", function () {
+    zRatio = document.width/1200;
+    if(!(zRatio < 1)) zRatio=1;
+    console.log(zRatio);
+});
 
 
 
@@ -33,6 +42,7 @@ var StickyNoteModule = function(mid, classname){
     this.notes = {};
     this.saveInterval = null;
     this.noteCache = null;
+    this.currentContextMenu = null;
     //register this stickynote module with the SlipStream client
     SlipStream.register({StickyNote:mid}, function (data) {
         var sdata = data;
@@ -51,18 +61,70 @@ var StickyNoteModule = function(mid, classname){
 StickyNoteModule.prototype.createBaseModuleNode = function(classname){
     var me = this;
     this.baseModuleNode = document.createElement('div');
-    this.baseModuleNode.onclick = this.cancelEdit.bind(this);
-    // this.baseModuleNode.addEventListener('mouseup', me.putDownNote);
+    this.baseModuleNode.addEventListener("mouseup", function(){me.putDownNote()});
+
+    this.baseModuleNode.onclick = function(event){
+        me.cancelEdit(event);
+    };
     this.baseModuleNode.className = "module sticky-note-module " + classname;
     this.baseModuleNode.setAttribute('guid', this.mid);
+    this.baseModuleNode.oncontextmenu = function (event) {
+        cMenu(event, function(t){
+            var del = document.createElement('a');
+            del.onclick = function(){
+                alert("Are you sure you want to remove this module?", function () {
+                    if(board.deleteModule(me.mid)){
+                        $.post("/mod_access.php", {
+                            action:"delete",
+                            class: "StickyNote",
+                            module:me.mid
+                        }, function(data){
+                            console.log(data);
+                        });
+                    }else{
+                        console.error("Module could not be deleted.");
+                    }
+
+                });
+            };
+            // console.log(t);
+            var guid = t.getAttribute('guid');
+            del.innerHTML = "Delete Module";
+            del.className = "warning";
+
+            var rename = document.createElement('a');
+            rename.onclick = function(){
+                var newname = prompt("Enter a new name");
+                var nummods = board.moduleObjects.length;
+                for(var i = 0; i<nummods; i++){
+                    if(board.moduleObjects[i].baseModuleNode.getAttribute('guid') == guid){
+
+                        board.moduleObjects[i].name = newname;
+                        console.log("Found");
+                        board.moduleObjects[i].save();
+                    }
+                }
+            };
+            rename.innerHTML = "Rename Module";
+
+            var addnote = document.createElement('a');
+            addnote.onclick = function () {
+                me.addBlankStickyNote();
+            };
+            addnote.innerHTML = "Add Note";
+            var hr = document.createElement('hr');
+            return [addnote, rename, hr, del];
+        });
+        return false;
+    };
     var addNoteButton = document.createElement('a');
-    addNoteButton.onclick = me.addBlankStickyNote;  //bind the addBlankNote function to the addNoteButton
+    addNoteButton.onclick = function(){me.addBlankStickyNote()};  //bind the addBlankNote function to the addNoteButton
     addNoteButton.innerHTML = '<span class="glyphicon glyphicon-plus-sign"></span>';
     addNoteButton.className = "add-note-button";
     addNoteButton.style.position = 'absolute';
     addNoteButton.style.right = 15;
     addNoteButton.style.bottom = 10;
-    addNoteButton.style.zIndex = 999999999;
+    addNoteButton.style.zIndex = 2000000;
     this.baseModuleNode.appendChild(addNoteButton);
     this.namediv = document.createElement('div');
     this.namediv.className = "mod-label";
@@ -71,21 +133,45 @@ StickyNoteModule.prototype.createBaseModuleNode = function(classname){
 
 StickyNoteModule.prototype.refresh = function () {
     if(this.heldNote || this.editedNote) return;        //if a note is held or edited, exit
+    // console.log("Refresh");
     this.changeNotes();
     this.namediv.innerHTML = this.name;
+    this.sizeText();
 };
 
 StickyNoteModule.prototype.createNewStickyNote = function (text, x, y, z, guid) {
+    console.log("here");
     if(this.numNotes >= this.maxNotes) return;
     if(guid == null) guid = getGuid();
     this.numNotes++;
+    var me = this;
     var note = document.createElement("textarea");      //create a textarea node
     note.className = "sticky-note noselect";
     note.setAttribute("guid", guid);
     note.readOnly = true;
     note.onmousedown = this.pickupNote.bind(this);
+
     note.addEventListener("dblclick", this.editNote.bind(this));        //add a double click event listener
-    note.addEventListener('mouseup', note.focus);
+    // note.addEventListener('mouseup', note.focus);
+    note.oncontextmenu = function (event) {
+        cMenu(event, function(t){
+            var del = document.createElement('a');
+            del.onclick = function(){
+                me.baseModuleNode.removeChild(t);
+                me.save();
+            };
+            del.innerHTML = "Delete";
+            var center = document.createElement('a');
+            center.onclick = function(){
+                centerText(t);
+                me.save();
+            };
+            center.innerHTML = "Toggle Align";
+            return [del, center];
+        });
+        event.stopPropagation();
+        return false;
+    };
     note.innerHTML = text;
     this.currentZIndex++;
     note.style.zIndex = this.currentZIndex;
@@ -140,6 +226,7 @@ StickyNoteModule.prototype.cancelEdit = function (event) {
         this.editedNote.className += " noselect";
         this.editedNote.style.boxShadow = "1px 1px 5px rgba(0,0,0,.5)";
         this.editedNote.onmousedown = this.pickupNote.bind(this);
+
         this.editedNote = null;
         this.baseModuleNode.removeChild(this.delNoteClickable);
         this.save();
@@ -167,22 +254,31 @@ StickyNoteModule.prototype.pickupNote = function (event) {
     this.heldNote.style.zIndex = this.currentZIndex;
     var noteBoundaries = this.heldNote.getBoundingClientRect();
     var containerBoundaries = this.baseModuleNode.getBoundingClientRect();
-    var offsetX = noteBoundaries.left - this.mouseTracker.x - containerBoundaries.left - mbw;   //calculate an offset so things aren't broke
-    var offsetY = noteBoundaries.top - this.mouseTracker.y - containerBoundaries.top - mbw;
+    var offsetX = noteBoundaries.left - this.mouseTracker.x/zRatio - containerBoundaries.left - mbw;   //calculate an offset so things aren't broke
+    var offsetY = noteBoundaries.top - this.mouseTracker.y/zRatio - containerBoundaries.top - mbw;
 
-    clearInterval(me.mti);
-    me.mti = window.setInterval(function(){     //set an Interval and put the id in this.mti
-        me.heldNote.style.left = (me.mouseTracker.x + offsetX);
-        me.heldNote.style.top = (me.mouseTracker.y + offsetY);
-    }, 15);
+    // clearInterval(me.mti);
+    me.mti = function () {
+        me.heldNote.style.left = (me.mouseTracker.x/zRatio + offsetX);
+        me.heldNote.style.top = (me.mouseTracker.y/zRatio + offsetY);
+    };
+
+    this.baseModuleNode.addEventListener('mousemove', me.mti);
+    // me.mti = window.setInterval(function(){     //set an Interval and put the id in this.mti
+    //     me.heldNote.style.left = (me.mouseTracker.x/zRatio + offsetX);
+    //     me.heldNote.style.top = (me.mouseTracker.y/zRatio + offsetY);
+    // }, 15);
 };
+
+
 
 StickyNoteModule.prototype.putDownNote = function () {
     if(this.heldNote){
         var debugrect = this.heldNote.getBoundingClientRect();
         var debugmod = this.heldNote.parentNode.getBoundingClientRect();
         //clear the mouse tracking interval (mti)
-        clearInterval(this.mti);
+        // clearInterval(this.mti);
+        this.baseModuleNode.removeEventListener('mousemove', this.mti);
         this.heldNote = null;
         this.save();
 
@@ -212,7 +308,7 @@ StickyNoteModule.prototype.save = function () {
     var data = {};
     data.name = this.name;
     data.notes = noteStack;
-
+    this.noteCache = noteStack;
     //update this module's data on the server
     $.post("/mod_access.php", {
         action:"update",
@@ -222,6 +318,7 @@ StickyNoteModule.prototype.save = function () {
     }, function(data){
         console.log(data);
     });
+    this.refresh();
 };
 
 StickyNoteModule.prototype.logMouse = function (event) {
@@ -232,7 +329,7 @@ StickyNoteModule.prototype.logMouse = function (event) {
 StickyNoteModule.prototype.loadModule = function(){
 
     this.baseModuleNode.addEventListener("mousemove", this.logMouse.bind(this));
-    this.baseModuleNode.addEventListener("touchmove", this.logMouse.bind(this));
+
     var me = this;
     //get the module described by me.mid from the database
     $.post("/mod_access.php", {
@@ -249,7 +346,6 @@ StickyNoteModule.prototype.loadModule = function(){
         }
 
         me.refresh();
-        me.sizeText();
     });
 };
 
@@ -257,10 +353,19 @@ StickyNoteModule.prototype.sizeText = function () {
 
     var br = this.baseModuleNode.getBoundingClientRect();
     var slen = this.namediv.innerHTML.length+1;
-    this.namediv.style.fontSize = br.width*2/slen;
+    var fsize = br.width*1.5/slen;
+    if(fsize > br.height) fsize = br.height/1.3;
+    this.namediv.style.fontSize = fsize;
     this.namediv.style.lineHeight = br.height + "px";
 };
 
+StickyNoteModule.prototype.hideContextMenu = function () {
+    var me = this;
+    if(me.currentContextMenu){
+        me.baseModuleNode.removeChild(me.currentContextMenu);
+        me.currentContextMenu = null;
+    }
+};
 
 StickyNoteModule.prototype.changeNotes = function () {
     // console.log("Change");
@@ -294,12 +399,10 @@ StickyNoteModule.prototype.changeNotes = function () {
 
         }else{
             me.createNewStickyNote(note.text, note.left, note.top, note.z, note.guid);
-
         }
     });
 
     for(var note in me.notes){
-
         if(note in newNotes){
 
         }else{
@@ -329,7 +432,44 @@ function getGuid() {
 function foreach(list, mapfunc){
     if(!list) return;
     var len = list.length;
-    for(var i = 0; i<len; i++){
+    for(var i = len-1; i>=0; i--){
         mapfunc(list[i]);
     }
 }
+
+function centerText(e){
+    var c = e.className.search(/center/) == -1;
+    e.className = e.className.replace(/ center/,"");
+    if(c)
+        e.className+=" center";
+}
+
+
+function cMenu(event, fReturnNodeList) {
+    var target = event.currentTarget;
+    var nodes = fReturnNodeList(target);
+    var len = nodes.length;
+    var menu = document.createElement('div');
+    menu.className = "context-menu";
+    menu.style.position = 'absolute';
+    menu.style.left = event.pageX;
+    menu.style.top = event.pageY;
+    // console.log(event);
+    for(var i = 0; i< len; i++){
+        menu.appendChild(nodes[i]);
+    }
+    menu.onmousedown = function (event) {
+        event.stopPropagation();
+    };
+    menu.onclick = function () {
+        hidecmenu();
+    };
+    var hidecmenu = function () {
+        document.body.removeChild(menu);
+        document.removeEventListener('mousedown', hidecmenu);
+    };
+    document.addEventListener("mousedown", hidecmenu);
+    document.body.appendChild(menu);
+    return false;
+}
+
