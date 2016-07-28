@@ -14,6 +14,6 @@ Allows users to post up to 16 sticky notes per module.  Sticky note text and loc
 ##Technologies
 Pinboard uses several neat tricks to work the way it does. 
 ###SlipStream
-SlipStream is a custom javascript and PHP library that mimics server push.  WebSockets are not mature enough to allow for server push and it was easier to write plain javascript that is cross browser compatible.
+SlipStream is a custom javascript and PHP library that mimics server push.  WebSockets ~~are not mature enough~~  require too many dependencies and it was easier to write plain javascript that is cross browser compatible.
 
 Each module on a page must "register" with SlipStream so that the class can recieve server pushes on one connection.  This is to avoid Internet Explorer's measly two connections per domain limit.  Connections are accepted server-side by a PHP script that "holds on to" the connection until it determines that it needs to notify the client.  Upon return, the client parses the data, splits the data up to each individual registered module and immediately opens another connection.  
