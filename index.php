@@ -10,9 +10,9 @@ require 'Pinboard.php';
     <?=web::nav()?>
 
     <div class="container" style="text-align: center; margin-top: 50px;">
-        <div class="module" style="height: 70%;;">
-            <h1 style="margin-top: 50px;">Welcome to</h1>
-            <div class="mod-label" style=" position: relative; background-color: #777; ">PINBOARD</div>
+        <div class="module" style="height: auto;background-color: white ;padding: 50px;">
+            <h1>Welcome to</h1>
+            <div class="mod-label" style=" position: relative; background-color: #1E60FF; font-size: 200px; color: rgba(30,96,255,0.4);">PINBOARD</div>
             <h3>Pinboard allows you to create a spot to organize a group.  Try creating a board!</h3>
             <center>
                 <form class="form-inline" action="/boards/" method="get" style="margin-top: 50px;">
