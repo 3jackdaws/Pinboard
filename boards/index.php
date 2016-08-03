@@ -10,6 +10,24 @@
  * Load board from get variable
  */
 
+function errorPage($message, $circle_symbol){
+    $title = "Pinboard";
+    echo web::head($title);
+    echo "<body>";
+    echo web::nav();
+    ?>
+    <div class="circle-lg">
+        <?=$circle_symbol?>
+    </div>
+    <center>
+        <h2>
+            <?=$message?>
+        </h2>
+    </center>
+    <?php
+    exit();
+}
+
 function clean($string) {
     $string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
 
@@ -19,48 +37,35 @@ function clean($string) {
 set_include_path(realpath($_SERVER['DOCUMENT_ROOT']) . '/assets/php');
 require_once 'Pinboard.php';
 require 'Components.php';
-foreach($_GET as $key=>$value)break;
-$board_uid = $key;
+require_once 'Account.php';
 
-if($board_uid == null){
-    header("Location: /");
+if(!isset($_COOKIE['token'])){
+    errorPage("You must be logged in to access this page.  Login <a href='/login'>here</a>.", "!!!");
 }
+$username=$_GET['user'];
+$board_uid = $_GET['board'];
 
+$user = new Account($_COOKIE['token']);
 if($board_uid == "new"){
-    $board_uid = clean($value);
-    $b = Pinboard::get($board_uid);
-    if($b['data'] == null){
-        $data = [];
-        $data['name'] = "New Board";
-        $data['owner'] = "None";
-        $data['participants'] = "All";
-        $data['data'] = null;
-        Pinboard::update($board_uid, $data);
-        header("Location: /boards/?".$board_uid);
-    }else{
-        $special = "alert('That board already exists!');";
+    $board_uid = Pinboard::createBoard($_GET['name']);
+    $user->takeOwnershipOf($board_uid);
+    header("Location: /boards/?user=" . $user->getUName() . "&board=" . $board_uid);
+}else{
+    $board = new Pinboard($board_uid);
+    if(!$board->contains("participants", $user->getUName())){
+        errorPage("You don't have access to this area.", ":(");
     }
-
 }
+
+
+
+
 $board = Pinboard::get($board_uid);
 
 if($board['data'] == null){
-    $title = "Pinboard";
-    echo web::head($title);
-    echo "<body>";
-    echo web::nav();
-    ?>
-    <div class="circle-lg">
-        ???
-    </div>
-    <center>
-        <h2>
-            Sorry, that board couldn't be found
-        </h2>
-    </center>
-    <?php
+
 }else{
-    $title = $board_uid;
+    $title = $board['name'];
     echo web::head($title);
     echo "<body>";
     echo web::nav();

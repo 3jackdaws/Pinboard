@@ -248,8 +248,15 @@ table.config td.td-selected{
 }
 
 .context-menu hr{
-    margin: 5px 0 5px 0;
+    margin: 5px;
     border-color: lightgrey;
+}
+
+.context-menu li{
+    color: #AAA;
+    padding: 3px 10px 3px 10px;
+    margin: 0 5px 0 5px;
+    border-bottom: 1px solid #CCC;
 }
 
 

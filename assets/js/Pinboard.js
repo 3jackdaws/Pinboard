@@ -56,6 +56,16 @@ window.alert = function(message, callback){
 
 };
 
+function changeLoginContext(fullname, content){
+    document.getElementById("context-button").innerHTML = fullname;
+    var menu = document.getElementById('context-menu');
+    menu.innerHTML = "";
+    var len = content.length;
+    for(var i = 0; i<len; i++){
+        menu.appendChild(content[i]);
+    }
+}
+
 var mbw = 0;
 SlipStream.setResource("/ss.php");
 var Pinboard = function (muid) {
@@ -182,10 +192,11 @@ Pinboard.prototype.getModuleFromDatabase = function (mod) {
 
 Pinboard.prototype.populateBoardData = function (data) {
     data = JSON.parse(data);
+    console.log(data);
     if(data.data == null) return;
     this.name = data.name;
     this.owner = data.owner;
-    this.participants = data.participants;
+    this.participants = JSON.parse(data.participants);
     if(data.data.config)
         this.moduleConfiguration = data.data.config;
     if(data.data.modules)

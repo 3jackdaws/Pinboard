@@ -47,9 +47,11 @@ class Web{
                 <ul class="nav navbar-nav navbar-left">
                     <li>
                         <div class="btn-group navbar-btn">
-                            <button id="context-button" data-toggle="dropdown" class="btn btn-dark dropdown-toggle">Find a board <span class="glyphicon glyphicon-search"></span></button>
-                            <ul id="context-menu" class="dropdown-menu" style="margin-top: 18px; padding: 15px; padding-bottom: 0;">
-                                
+                            <button id="context-button" data-toggle="dropdown" class="btn btn-dark dropdown-toggle">Log In <span class="glyphicon glyphicon-log-in"></span></button>
+                            <ul id="context-menu" class="dropdown-menu context-menu" style="padding: 5px 0 5px 0; margin-top: 15px;">
+                                <li>
+                                    <?=web::login()?>
+                                </li>
                             </ul>
                         </div>
                     </li>
@@ -63,6 +65,20 @@ class Web{
                 </ul>
             </div>
         </nav>
+        <?php
+        return ob_get_clean();
+    }
+
+    public static function login(){
+        ob_start();
+        ?>
+        <center>
+            <form action="/" style="width: 200px;" method="POST">
+                <input class="form-control" name="username" placeholder="Username" style="margin-top: 10px;"/>
+                <input class="form-control" name="password" placeholder="Password" type="password" style="margin-top: 10px;"/>
+                <button class="btn btn-default" style="margin-top: 15px;">Log In</button>
+            </form>
+        </center>
         <?php
         return ob_get_clean();
     }

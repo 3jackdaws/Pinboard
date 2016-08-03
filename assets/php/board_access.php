@@ -21,6 +21,7 @@ require_once 'Pinboard.php';
  */
 
 $action     = $_POST['action'];
+$utoken     = $_POST['utoken'];
 $guid       = $_POST['board'];
 $response   = [];
 

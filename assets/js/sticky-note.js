@@ -170,7 +170,9 @@ StickyNoteModule.prototype.createNewStickyNote = function (text, x, y, z, guid) 
     note.onmousedown = this.pickupNote.bind(this);
 
     note.addEventListener("dblclick", this.editNote.bind(this));        //add a double click event listener
-    // note.addEventListener('mouseup', note.focus);
+    note.addEventListener('mouseout', function (event) {
+        event.stopPropagation();
+    });
     note.oncontextmenu = function (event) {
         cMenu(event, function(t){
             var del = document.createElement('a');

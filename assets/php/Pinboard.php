@@ -16,7 +16,83 @@ require_once 'Database.php';
 
 class Pinboard
 {
-    protected $_module_data = [];
+    protected $board = [];
+
+    public function __construct($board_uid)
+    {
+        $this->board = self::get($board_uid);
+        $this->board['participants'] = json_decode($this->board['participants']);
+    }
+
+    public function addParticipant($username){
+        if(!isset($this->board['participants'])) $this->board['participants'] = [];
+        if(array_search($username, $this->board['participants']) == false){
+            $this->board['participants'][] = $username;
+            return true;
+        }
+        return false;
+    }
+
+    public function removeParticipant($username){
+        $new = array_diff($this->board['participants'], [$username]);
+        if(count($this->board['participants']) - count($new) > 0){
+            $this->board['participants'] = $new;
+            return true;
+        }
+        return false;
+    }
+
+    public function setOwner($username){
+        $this->board['owner'] = $username;
+    }
+
+    public function contains($haystack, $needle){
+        if(is_array($this->board[$haystack])){
+            return array_search($needle, $this->board[$haystack]) !== false;
+        }else{
+            return $this->board[$haystack] == $needle;
+        }
+    }
+
+    public function save(){
+        return self::update($this->board['guid'], $this->board);
+    }
+
+    public static function nameOf($board_guid){
+        $sql = "SELECT name FROM boards WHERE guid=:guid LIMIT 1;";
+        $statement = Database::connect()->prepare($sql);
+        $statement->bindParam(':guid', $board_guid);
+        $statement->execute();
+        return $statement->fetch()[0];
+    }
+
+    public static function getBoardByNameAndUser($name, $user){
+        $sql = "SELECT * FROM boards WHERE name=:name AND participants LIKE :user LIMIT 1;";
+        $statement = Database::connect()->prepare($sql);
+        $statement->bindParam(':guid', $board_guid);
+        $statement->execute();
+        return $statement->fetch()[0];
+    }
+
+    /**
+     * Creates a new empty board and returns the Pinboard object
+     * @return string
+     */
+    public static function createBoard($name){
+        $data['name'] = $name;
+        $guid = Database::getGUID();
+        self::update($guid, $data);
+        return $guid;
+    }
+
+    public static function boardExists($board_guid){
+        $sql = "SELECT EXISTS (SELECT * FROM boards WHERE guid=:guid);";
+        $statement = Database::connect()->prepare($sql);
+        $statement->bindParam(':guid', $board_guid);
+        $statement->execute();
+        return boolval($statement->fetch()[0]);
+    }
+
     public static function get($guid){
         $sql = "SELECT * FROM boards WHERE guid=:guid;";
         $statement = Database::connect()->prepare($sql);
@@ -30,9 +106,10 @@ class Pinboard
     }
 
     public static function update($guid, $data){
+
         $name = $data['name'];
+        $participants = json_encode($data['participants']);
         $owner = $data['owner'];
-        $participants = $data['participants'];
         $real_data['modules'] = $data['modules'];
         $real_data['config'] = $data['config'];
         $data_json = json_encode($real_data);

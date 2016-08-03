@@ -2,7 +2,21 @@
 set_include_path(realpath($_SERVER['DOCUMENT_ROOT']) . '/assets/php');
 require 'Components.php';
 require 'Pinboard.php';
+require_once 'Account.php';
 
+if(isset($_COOKIE['token'])){
+    $useracc = new Account($_COOKIE['token']);
+//    error_log("COOKIE");
+}
+if(isset($_POST['username'])){
+    $user = $_POST['username'];
+    $password = $_POST['password'];
+    $useracc = new Account(null);
+    $token = $useracc->getTokenFromCredentials($user, $password);
+    error_log($token);
+    setcookie("token", $token, strtotime("+1 month"), '/');
+    header("Location: /");
+}
 
 ?>
 <?=web::head("Pinboard")?>
@@ -17,17 +31,15 @@ require 'Pinboard.php';
             <center>
                 <form class="form-inline" action="/boards/" method="get" style="margin-top: 50px;">
                     <div class="form-group-lg">
-
-
-
                         <div class = "input-group">
-                            <input class="form-control input-lg" name="new" placeholder="Board Name" style="margin: 0"/>
-                <span class = "input-group-btn" style="margin-top: 10px;">
-                    <button class = "btn btn-default btn-lg" type = "submit">
-                        Go!
-                    </button>
-                </span>
-
+                            <input class="form-control input-lg" name="name" placeholder="Board Name" style="margin: 0"/>
+                            <input type="hidden" value="<?=$useracc->getToken()?>" name="utoken">
+                            <input type="hidden" value="new" name="board">
+                            <span class = "input-group-btn" style="margin-top: 10px;">
+                                <button class = "btn btn-default btn-lg" type = "submit">
+                                    Go!
+                                </button>
+                            </span>
                         </div>
                 </form>
 
@@ -35,7 +47,43 @@ require 'Pinboard.php';
         </div>
 
     </div>
+
 </body>
+<?=$useracc->writeJSVars()?>
 <script>
-    
-</script>
+    function createAnchor(text, onclick){
+        var a = document.createElement('a');
+        a.innerHTML = text;
+        a.onclick = onclick;
+        return a;
+    }
+
+
+
+    function createHR(){
+        return document.createElement('hr');
+    }
+
+    function createLabel(text){
+        var li = document.createElement('li');
+        li.innerHTML = text;
+        return li;
+    }
+
+    window.addEventListener("load",function () {
+        var numboards = user.boards.length;
+        var boards = [];
+        var mblabel = createLabel("Your Boards");
+        boards.push(mblabel);
+        for(var i = 0; i<numboards; i++){
+            var board = user.boards[i];
+            boards.push(createAnchor(user.bnames[i], function () {
+                window.location = "/boards/?user=" + user.uname + "&board=" + board;
+            }));
+            console.log(user.bnames[i]);
+        }
+
+
+        changeLoginContext(user.uname, boards);
+    });
+    </script>
