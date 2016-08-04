@@ -24,6 +24,7 @@ guid VARCHAR (38) NOT NULL UNIQUE,
 name VARCHAR (64),
 owner VARCHAR (38),
 participants VARCHAR (20000),
+updated TIMESTAMP,
 data TEXT (65565),
 PRIMARY KEY (guid)
 );");

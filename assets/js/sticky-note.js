@@ -474,31 +474,5 @@ function centerText(e){
 }
 
 
-function cMenu(event, fReturnNodeList) {
-    var target = event.currentTarget;
-    var nodes = fReturnNodeList(target);
-    var len = nodes.length;
-    var menu = document.createElement('div');
-    menu.className = "context-menu";
-    menu.style.position = 'absolute';
-    menu.style.left = event.pageX;
-    menu.style.top = event.pageY;
-    // console.log(event);
-    for(var i = 0; i< len; i++){
-        menu.appendChild(nodes[i]);
-    }
-    menu.onmousedown = function (event) {
-        event.stopPropagation();
-    };
-    menu.onclick = function () {
-        hidecmenu();
-    };
-    var hidecmenu = function () {
-        document.body.removeChild(menu);
-        document.removeEventListener('mousedown', hidecmenu);
-    };
-    document.addEventListener("mousedown", hidecmenu);
-    document.body.appendChild(menu);
-    return false;
-}
+
 

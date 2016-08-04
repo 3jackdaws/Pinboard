@@ -6,32 +6,63 @@
     Pinboard.js
 
  */
+function cMenu(event, fReturnNodeList) {
+    var target = event.currentTarget;
+    var nodes = fReturnNodeList(target);
+    var len = nodes.length;
+    var menu = document.createElement('div');
+    menu.className = "context-menu";
+    menu.style.position = 'absolute';
+    menu.style.left = event.pageX;
+    menu.style.top = event.pageY;
+    // console.log(event);
+    for(var i = 0; i< len; i++){
+        menu.appendChild(nodes[i]);
+    }
+    menu.onmousedown = function (event) {
+        event.stopPropagation();
+    };
+    menu.onclick = function () {
+        hidecmenu();
+    };
+    var hidecmenu = function () {
+        document.body.removeChild(menu);
+        document.removeEventListener('mousedown', hidecmenu);
+    };
+    document.addEventListener("mousedown", hidecmenu);
+    document.body.appendChild(menu);
+    return false;
+}
+
 window.alert = function(message, callback){
     if(window.alertObject) return;
-    this.alertObject = document.createElement('div');
+    var modal = document.createElement('div');
     if(!callback) callback = function () {};
     var shade = document.createElement('div');
     var ok = document.createElement('div');
-    this.alertObject.style.position = 'fixed';
-    this.alertObject.style.margin = "auto";
-    this.alertObject.style.background = "#f5f5f5";
-    this.alertObject.style.width = '500px';
-    this.alertObject.style.border = '1px solid lightgrey';
-    this.alertObject.style.borderRadius = "6px";
-    this.alertObject.style.top = '40%';
-    this.alertObject.style.left = 0;
-    this.alertObject.style.right = 0;
-    this.alertObject.style.padding = '30px';
-    this.alertObject.style.paddingBottom = '0';
-    this.alertObject.innerHTML = message;
-    this.alertObject.style.zIndex = 3333333333;
+    modal.style.position = 'fixed';
+    modal.style.margin = "auto";
+    modal.style.background = "#f5f5f5";
+    modal.style.width = '500px';
+    modal.style.border = '1px solid lightgrey';
+    modal.style.borderRadius = "6px";
+    modal.style.top = '40%';
+    modal.style.left = 0;
+    modal.style.right = 0;
+    modal.style.padding = '30px';
+    modal.style.paddingBottom = '0';
+    modal.innerHTML = message;
+    modal.style.zIndex = 3333333333;
+
     shade.style.position = 'fixed';
+    shade.style.top = 0;
+    shade.style.left = 0;
     shade.style.height = '100%';
     shade.style.width = '100%';
     shade.style.background = 'rgba(0,0,0,.7)';
-    shade.style.zIndex = 222222222;
+    shade.style.zIndex = 'auto';
     shade.onclick = function(){
-        document.body.removeChild(shade);
+        // document.body.removeChild(shade);
         document.body.removeChild(window.alertObject);
         window.alertObject = null;
     };
@@ -44,15 +75,17 @@ window.alert = function(message, callback){
     ok.innerHTML = "OK";
     ok.onclick = function(){
         callback();
-        document.body.removeChild(shade);
+        // document.body.removeChild(shade);
         document.body.removeChild(window.alertObject);
         window.alertObject = null;
     };
     ok.style.cursor = "pointer";
     ok.style.textAlign = 'center';
-    this.alertObject.appendChild(ok);
+    modal.appendChild(ok);
+    shade.appendChild(modal);
+    this.alertObject = shade;
     document.body.appendChild(this.alertObject);
-    document.body.appendChild(shade);
+    // document.body.appendChild(shade);
 
 };
 
@@ -89,27 +122,31 @@ var Pinboard = function (muid) {
             me.addModule();
         });
     },2000);
+    this.pinboardNode.oncontextmenu = function (event) {
+        cMenu(event, function (t) {
+            var hr = document.createElement('hr');
+            var boardActionsLabel = document.createElement('li');
+            boardActionsLabel.innerHTML = "Board Actions";
+            var addModuleButton = document.createElement('a');
+            addModuleButton.onclick = function () {
+                me.addModule()
+            };
+            addModuleButton.innerHTML = "Add New Module";
+            var delBoardButton = document.createElement('a');
+            delBoardButton.className = "warning";
+            delBoardButton.onclick = function () {
+                me.delBoard()
+            };
+            delBoardButton.innerHTML = "Delete this Board";
+            return [boardActionsLabel, addModuleButton, delBoardButton];
+        });
+        return false;
+    };
 
 };
 
 Pinboard.prototype.changeContextUI = function () {
-    var me = this;
-    var cbutton = document.getElementById('context-button');
-    var cmenu = document.getElementById('context-menu');
-    cmenu.innerHTML = "";
-    cbutton.innerHTML = "This board <span class='glyphicon glyphicon-triangle-bottom'></span>";
-    var addModuleButton = document.createElement('button');
-    addModuleButton.className = "btn btn-primary c-button";
-    addModuleButton.onclick = function(){me.addModule()};
-    addModuleButton.innerHTML = "Add New Module";
-    var li = document.createElement('li');
-    cmenu.appendChild(li.appendChild(addModuleButton));
-    var delBoardButton = document.createElement('button');
-    li = document.createElement('li');
-    delBoardButton.className = "btn btn-danger c-button";
-    delBoardButton.onclick = function(){me.delBoard()};
-    delBoardButton.innerHTML = "Delete this Board";
-    cmenu.appendChild(li.appendChild(delBoardButton));
+
 }
 
 Pinboard.prototype.getBoardData = function () {

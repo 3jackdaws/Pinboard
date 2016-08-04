@@ -80,7 +80,7 @@ if(isset($_POST['username'])){
             boards.push(createAnchor(user.bnames[i], function () {
                 window.location = "/boards/?user=" + user.uname + "&board=" + board;
             }));
-            console.log(user.bnames[i]);
+//            console.log(user.bnames[i]);
         }
 
 
